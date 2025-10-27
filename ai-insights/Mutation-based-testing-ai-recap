@@ -1,0 +1,72 @@
+📘 MUTATION TESTING – stručné poznámky
+
+🔹 Podstata:
+- Testuje kvalitu testov, nie priamo kód.
+- Mení kód malými úpravami (mutanty) a zisťuje, či testy zmenu zachytia.
+- Ak test zlyhá → mutant zabitý; ak prejde → mutant prežil (buď ekvivalentný, alebo test slabý).
+
+🔹 Cieľ:
+Zmerať, ako dobre testy zachytávajú chyby (mutation score).
+
+🔹 Typy mutantov:
+AOR (aritmetika), ROR (relácie), LCR (logické spojky), UOI (unárne operátory),
+CRP (konštanty), SDL (odstránenie príkazu), RVR (návratová hodnota), ASR (priradenia), MCR (volania metód).
+
+🔹 Proces:
+1. Definovanie cieľov a metrík.
+2. Výber rozsahu a mutátorov.
+3. Generovanie mutantov (napr. cez AST v Pythone).
+4. Spustenie testov pre každý mutant.
+5. Vyhodnotenie – zabitý, prežil, ekvivalentný.
+6. Reportovanie výsledkov a zlepšovanie testov.
+
+🔹 Ekvivalentní mutanti:
+- Správajú sa rovnako ako originál, testy ich nemôžu zabiť.
+- Rozpoznávanie je ťažké (používajú sa heuristiky, symbolická analýza, LLM).
+
+🔹 Výzvy:
+- Výkon – množstvo mutantov, dlhý čas testovania.
+- Ekvivalentní mutanti – ťažko rozlíšiteľní.
+- Flaky testy – nestabilné výsledky.
+- Integrácia do CI/CD – potreba optimalizácií a paralelizácie.
+- Interpretácia – vysoké skóre ≠ kvalitné testy.
+
+🔹 AI použitie:
+- LLM dokáže odhadnúť ekvivalentné mutanty podľa sémantiky.
+- Môže prideliť confidence skóre a pomôcť s návrhom chýbajúcich testov.
+
+------------------------------------------------------------
+
+📗 CODE COVERAGE – stručné poznámky
+
+🔹 Podstata:
+Meria, koľko častí programu sa vykonalo počas testov.
+
+🔹 Mechanizmus:
+1. Kód sa zainštrumentuje (vloží senzory).
+2. Spustia sa testy – senzory zaznamenajú vykonané časti.
+3. Dáta sa vyhodnotia a vytvorí sa report.
+
+🔹 Typy:
+- Line coverage – vykonané riadky.
+- Branch coverage – všetky vetvy podmienok.
+- Function coverage – spustené funkcie.
+- Condition coverage – hodnoty true/false.
+- Path coverage – všetky možné cesty (prakticky nemožné).
+
+🔹 Vzťah k mutation testingu:
+- Coverage hovorí, čo testy spúšťajú.
+- Mutation testing hovorí, či testy chytia chyby.
+- Spolu hodnotia kvantitu aj kvalitu testov.
+
+------------------------------------------------------------
+
+📙 AST a mutácie v Pythone – stručne
+
+🔹 Kód sa najprv preloží do AST (Abstract Syntax Tree).
+🔹 Uzly AST reprezentujú štruktúru programu (napr. funkcie, operátory, podmienky).
+🔹 Mutácie sa robia zmenou uzlov (napr. + → - alebo premenovanie funkcie).
+🔹 Na prechádzanie stromu sa používa:
+  - ast.walk() – manuálne prechádzanie všetkých uzlov,
+  - ast.NodeTransformer – automatické spracovanie podľa typu uzla.
+🔹 Každý uzol má informácie o pozícii v zdrojovom kóde (lineno, col_offset).
