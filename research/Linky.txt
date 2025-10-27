@@ -1,0 +1,18 @@
+Mutation Testing In Software Testing | Mutation Testing In Software Engineering | Mutation Testing
+https://www.youtube.com/watch?v=AIOh1zcZmh8
+
+Mutation testing: Who tests the testers?
+https://www.youtube.com/watch?v=uoxT2pRenQs
+
+Tech Talk | Mutation Testing
+https://www.youtube.com/watch?v=41ywot_Z_Ts
+
+Kill All Mutants! (Intro to Mutation Testing) - Dave Aronson
+https://www.youtube.com/watch?v=vQrnVD6CbxU
+
+https://www.geeksforgeeks.org/software-engineering/software-testing-mutation-testing/
+
+https://medium.com/@sylvain.tiset/a-complete-guide-on-mutation-testing-b924563066e6
+
+Chat s GPT
+https://chatgpt.com/share/68ff3e06-e65c-800e-986f-9c4e0d2a3d00

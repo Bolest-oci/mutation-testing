@@ -1,0 +1,17 @@
+Mutation-based Testing
+- technika testovania softvéru, ktorá hodnotí kvalitu existujúcich testov, tým že overuje, či testy dokážu odhaliť možné chyby zavedené do kódu.
+ako funguje:
+1. kóde sa vytvoria mutanti – malé zmeny, napr.:
+Logické/Aritmetické operátory: > → >=, + → -
+Konštanty: 0 → 1, true → false
+zmeny v if/else vetve, for/while cykloch...
+Odstránenie alebo zmena riadku kódu
+2. Spustia sa existujúce testy na mutantoch.
+3. Analýza výsledkov:
+Mutant zabitý → testy ho odhalili, testy sú efektívne.
+Mutant prežil → testy chybu nezachytili alebo mutant je ekvivalentný (žiadny test ho nezabije).
+Ak mutant prežil a nie je ekvivalentný → treba dopísať testy alebo opraviť kód, aby chybu odhalili.
+ekvivalentný mutant - žiadny test ho nemôže “zabiť”, pretože nikdy nespôsobí odlišný výsledok.
+Dôležitá metrika:
+Mutation Score – percento mutantov zabitých testami:
+(počet zabitých mutantov / celkový počet mutantov) x 100
