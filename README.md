@@ -13,5 +13,5 @@ Contains summaries and ideas generated from conversations with AI related to Mut
 ### Ideas for using AI in Mut Testing
 
 - controll mutators - AI konroluje a riadi proces mutacie
-- help interpreting results from Mut testing
+- Interpreting Mutation Testing Outcomes with AI
 

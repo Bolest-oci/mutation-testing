@@ -23,3 +23,12 @@ https://pypi.org/project/mutmut/
 
 Chat s GPT
 https://chatgpt.com/share/68ff3e06-e65c-800e-986f-9c4e0d2a3d00
+
+
+algortihms_for_mutation_based_testing.pdf 2005 !!!
+
+Mutation-Based Approach to Supporting Human–Machine.pdf 
+README.md
+What is Mutation Testing(Code Mutation Analysis).pdf
+
+mutation_testing.pdf
