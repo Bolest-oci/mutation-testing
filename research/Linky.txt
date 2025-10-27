@@ -14,5 +14,9 @@ https://www.geeksforgeeks.org/software-engineering/software-testing-mutation-tes
 
 https://medium.com/@sylvain.tiset/a-complete-guide-on-mutation-testing-b924563066e6
 
+https://testrigor.com/blog/understanding-mutation-testing-a-comprehensive-guide/
+
+https://stryker-mutator.io/docs/
+
 Chat s GPT
 https://chatgpt.com/share/68ff3e06-e65c-800e-986f-9c4e0d2a3d00
