@@ -10,3 +10,8 @@ Contains materials and resources that team members have read or explored about M
 Contains summaries and ideas generated from conversations with AI related to Mutation-Based Testing.
 
 
+### Ideas for using AI in Mut Testing
+
+- controll mutators - AI konroluje a riadi proces mutacie
+- help interpreting results from Mut testing
+
