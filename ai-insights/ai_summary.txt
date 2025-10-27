@@ -1,0 +1,81 @@
+Summary: Mutation Testing Concepts
+
+1. Mutation-Based Testing
+
+A software testing technique where small changes (mutants) are introduced into the program to test whether existing test cases can detect them.
+If a test case fails on a mutant -> mutant is killed.
+If it passes -> mutant survives, indicating a weak test.
+Goal: Evaluate the strength of the test suite.
+
+---
+
+2. Mutation-Based Test Assessment 
+
+Focuses on  measuring  the quality or effectiveness of a test suite based on mutation testing results.
+Uses metrics like the  mutation score :
+Mutation Score = (Mutants Killed/Total Mutants)*100%
+Goal: Provide a  quantitative assessment  of test effectiveness.
+
+---
+
+ ✅  Key Difference 
+
+| Aspect     | Mutation-Based Testing                    | Mutation-Based Test Assessment           |
+| ---------- | ----------------------------------------- | ---------------------------------------- |
+|  Focus   | Process of generating and running mutants | Evaluating results from mutation testing |
+|  Goal    | Find weak test cases                      | Measure test suite quality               |
+|  Output  | Killed/survived mutants                   | Mutation score or effectiveness metric   |
+
+---
+
+  3. Weak Mutation Testing (Howden’s Approach) 
+
+ A  cost-reduced version  of mutation testing.
+ A mutant is killed if  two conditions  are met:
+
+  1.  Reachability:  The mutated code is executed.
+  2.  Infection:  The program state changes immediately after executing the mutated instruction.
+ Instead of running the whole program, weak mutation checks  program states right after mutation , making it faster.
+
+---
+
+  4. Components in Weak Mutation 
+
+Five main program components used for mutation:
+
+1. Variable Reference
+2. Variable Assignment
+3. Arithmetic Expression
+4. Relational Expression
+5. Boolean Expression
+
+---
+
+  5. Types of Weak Mutation (Woodward & Halewood) 
+
+| Type          | Description                                                                               |
+| ------------- | ----------------------------------------------------------------------------------------- |
+|  EX-WEAK/1  | Compare program states after executing a mutated  expression .                          |
+|  ST-WEAK/1  | Compare after executing a mutated  statement  once.                                     |
+|  BB-WEAK/1  | Compare at the end of the  first execution of a mutated basic block .                   |
+|  BB-WEAK/N  | Extended version — compares after  multiple executions  of the block (for loops, etc.). |
+
+---
+
+  6. Weak Mutation Testing Framework 
+
+1.  Pre-Test Phase: 
+
+    Upload program, generate mutants, store in database.
+    Load test cases and mutants into controller.
+
+2.  Testing Phase: 
+
+    Execute mutants with test cases.
+    Compare results with the original program.
+    Record whether mutants are killed or survived.
+
+3.  Post-Test Phase: 
+
+    Store results and compute mutation score.
+    Assess test suite effectiveness.
