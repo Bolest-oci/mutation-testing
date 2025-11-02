@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MutPy mutation report - mutation #7</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+    
+<link href="http://alexgorbatchev.com/pub/sh/current/styles/shCore.css" rel="stylesheet" type="text/css" />
+<link href="http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    
+<script src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js" type="text/javascript"></script>
+<script src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushPython.js" type="text/javascript"></script>
+<script type="text/javascript">
+    SyntaxHighlighter.all();
+    window.setTimeout(function () {
+        
+        $('.line.number10').attr('title', 'COI');
+        
+    }, 0);
+</script>
+
+</head>
+<body>
+    <div class="container">
+        
+<div class="page-header">
+    <h1>Mutation #7</h1>
+</div>
+<h3>Details</h3>
+<ul>
+    <li>module - <code><module 'discount_calculator' from 'C:\\Users\\babin\\Downloads\\mutation-testing-main(1)\\mutation-testing-main\\doc\\_spikes\\mut-testing\\discount_calculator.py'></code></li>
+    <li><span class="label label-success">killed</span> by <code>test_discount_calculator.py::test_regular_customer</code></li>
+    
+    <li>duration - 0.085 s</li>
+    
+    
+    <li>tests run - 1</li>
+    
+</ul>
+
+<h3>Exception traceback</h3>
+<pre>def test_regular_customer():
+>       assert calculate_discount(100, "regular") == 95.0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError
+
+test_discount_calculator.py:6: AssertionError</pre>
+
+<h3>Mutations</h3>
+<ul>
+    
+    <li>COI - line 10</li>
+    
+</ul>
+<h3>Mutant</h3>
+<pre class="brush: python; first-line: 1; highlight: [10]; toolbar: false;">def calculate_discount(price: float, customer_type: str, coupon_code: str | None = None) -> float:
+    '''
+    Calculates the final price after applying discounts based on customer type and coupon.
+    '''
+    if price < 0:
+        raise ValueError('Price cannot be negative')
+    
+    discount = 0.0
+    
+    if not (customer_type == 'regular'):
+        discount = 0.05
+    elif customer_type == 'vip':
+        discount = 0.1
+    elif customer_type == 'employee':
+        discount = 0.2
+    
+    if coupon_code == 'EXTRA10':
+        discount += 0.1
+    elif coupon_code == 'HALFPRICE':
+        discount = 0.5
+    
+    final_price = price * (1 - discount)
+    return round(final_price, 2)</pre>
+
+    </div>
+</body>
+</html>
