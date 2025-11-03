@@ -19,6 +19,7 @@ Use `jq`,  avoid sending  full file repeatedly to LLM.
 3.3 display info about the mutation, analyse reasons. Display clickable links to code witn problematic line.
 Focus on code first, try to find useless code, quick exits, and other reasons to fix code.
 Only when code analyses show no obvious bugs and possible improvements, ONLY then suggest that test should be added.
+When adding tests, prefer adding new, more specific tests rather than modifying existing ones. This preserves the original test's intent.
 3.4 display open test file and code file in editor
 
 ### 4. ask user if he wants to change CODE or TEST
