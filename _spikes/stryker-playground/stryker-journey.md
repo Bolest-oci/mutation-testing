@@ -2,6 +2,16 @@
 
 This document tracks the process of improving the mutation score for `_uri.js` by analyzing and killing survived mutants.
 
+## Current Status
+
+**Mutation Score:** 96.16%
+
+**Survived Mutants (14):**
+
+*   **`removeDotSegments` (10 mutants):** A complex function with redundant code that has proven difficult to test. See [Section 5](#5-fifth-analysis-the-removedotsegments-mystery) for details.
+*   **`_merge` (2 mutants):** A function with logic that is difficult to isolate and test. See [Section 6](#6-sixth-analysis-unresolved-mutant-in-_merge) for details.
+*   **`splitUriRegex` (2 mutants):** The `^` and `$` anchors, which are not covered by the current test suite. See [Section 14](#14-fourteenth-analysis-the-splituriregex-anchor-mystery) for details.
+
 ---
 
 ## 1. Initial Analysis: Mutant #72 (ConditionalExpression)
@@ -292,5 +302,175 @@ The author has made a conscious decision to disable mutation testing on this lin
 We will document this finding and move on. This is a good example of how `Stryker disable` comments can be used to manage the scope of mutation testing, but also how they can sometimes hide redundant code that could be refactored.
 
 - **Result:** This line is intentionally not being tested for mutations. We will leave it as is and proceed to the next solvable mutant.
+
+---
+## 9. Ninth Analysis: `decodeSegments` Quick Exit
+
+- **File:** `src/_uri.js`
+- **Function:** `decodeSegments`
+- **Location:** Line 285
+- **Analysis:** A `BlockStatement` mutant survived by removing the quick exit `if (encodedPath === '') { return []; }`. This was possible because the subsequent `split` and `map` operations would also result in an empty array for an empty input string. The user explicitly requested to keep this quick exit.
+
+### Decision 9: Disable Mutation Testing for Quick Exit
+
+Following the user's instruction to keep the quick exit for performance, the `// Stryker disable next-line all` directive was added to prevent mutation testing on this line.
+
+**Before:**
+```javascript
+function decodeSegments(encodedPath) {
+    if (encodedPath === '') {
+        return [];
+    }
+    const segments = encodedPath.split('/');
+    if (segments.shift() !== '') {
+        throw new Error('path-abempty expected');
+    }
+    return segments.map((segment) => decodeURIComponent(segment));
+}
+```
+
+**After:**
+```javascript
+function decodeSegments(encodedPath) {
+    // Stryker disable next-line all // (quick exit only, no logic change)
+    if (encodedPath === '') {
+        return [];
+    }
+    const segments = encodedPath.split('/');
+    if (segments.shift() !== '') {
+        throw new Error('path-abempty expected');
+    }
+    return segments.map((segment) => decodeURIComponent(segment));
+}
+```
+
+- **Result:** The `BlockStatement` mutant was no longer reported as "Survived" due to the Stryker directive. The functional tests passed, and the mutation score improved to **94.52%**.
+
+---
+## 10. Tenth Analysis: `encodeSegments` Array Type Check
+
+- **File:** `src/_uri.js`
+- **Function:** `encodeSegments`
+- **Location:** Line 304
+- **Analysis:** A `ConditionalExpression` mutant survived because there was no test case that called `encodeSegments` with a non-array argument. The `if (!(segments instanceof Array))` check was not fully covered.
+
+### Decision 10: Add a new test case for non-array input
+
+A new test case was added to `_spikes/stryker-playground/uri/test/_uri.test.js` to specifically test the `IllegalArgumentException` when a non-array is passed to `encodeSegments`.
+
+**New Test Added:**
+```javascript
+test('encodeSegments should throw error for non-array input', () => {
+    expect(() => uri.encodeSegments('not an array')).toThrow('IllegalArgumentException, array of segments expected');
+});
+```
+
+- **Result:** The new, more specific test passed and successfully **killed** the `ConditionalExpression` and `BlockStatement` mutants related to the array type check. The mutation score improved to **95.34%**.
+
+---
+## 11. Eleventh Analysis: `decodeSegments` Error Message
+
+- **File:** `src/_uri.js`
+- **Function:** `decodeSegments`
+- **Location:** Line 291
+- **Analysis:** A `StringLiteral` mutant survived by changing the error message `path-abempty expected` to an empty string. This was possible because the test only checked that an error was thrown, not for the specific message.
+
+### Decision 11: Strengthen the Test Case
+
+Following the user's instruction, a new line was added to the existing test case to assert the specific error message.
+
+**Test Change:**
+```diff
+<<<<<<< SEARCH
+:start_line:321
+-------
+        expect(() => uri.decodeSegments(' /a')).toThrow();
+    });
+=======
+        expect(() => uri.decodeSegments(' /a')).toThrow();
+        expect(() => uri.decodeSegments(' /a')).toThrow('path-abempty expected');
+    });
+>>>>>>> REPLACE
+```
+
+- **Result:** The new assertion in the test successfully **killed** the `StringLiteral` mutant. The mutation score improved from 95.34% to **95.62%**.
+
+---
+## 12. Twelfth Analysis: `isSubordinate` Authority Check
+
+- **File:** `src/_uri.js`
+- **Function:** `isSubordinate`
+- **Location:** Line 323
+- **Analysis:** A `ConditionalExpression` mutant survived in the `isSubordinate` function. The mutant replaced `uriSub.authority != null` with `true`, which caused the check to fail when `uriSub.authority` was `null`.
+
+### Decision 12: Add a new test case for `null` sub-authority
+
+The user provided a new test case that correctly triggers the `null` sub-authority check.
+
+**New Test Added:**
+```javascript
+[ '//john.doe@www.example.com:123/forum/questions/', '/forum/questions/', true, true ]
+```
+
+- **Result:** The new test case successfully **killed** the `ConditionalExpression` mutant. The mutation score improved from 95.62% to **95.89%**.
+
+---
+## 13. Thirteenth Analysis: `isSubordinate` `orSame` Flag
+
+- **File:** `src/_uri.js`
+- **Function:** `isSubordinate`
+- **Location:** Line 327
+- **Analysis:** A `ConditionalExpression` mutant survived in the `isSubordinate` function. The mutant replaced `(orSame || uriSub.path.length !== uriParent.path.length)` with `true`. This was possible because there was no test case where the paths were identical and `orSame` was `false`.
+
+### Decision 13: Add a new test case for identical paths with `orSame` as `false`
+
+The user provided a new test case that correctly tests this scenario.
+
+**New Test Added:**
+```javascript
+[ '/a/b', '/a/b', false, false ]
+```
+
+- **Result:** The new test case successfully **killed** the `ConditionalExpression` mutant. The mutation score improved from 95.89% to **96.16%**.
+
+---
+## 14. Fourteenth Analysis: The `splitUriRegex` Anchor Mystery
+
+- **File:** `src/_uri.js`
+- **Function:** `decomposeComponents`
+- **Location:** Lines 26 and 34
+- **Analysis:** `StringLiteral` mutants survived in the `splitUriRegex` by removing the start (`^`) and end (`$`) anchors. This indicated a gap in the test suite, as no tests were failing when the regex was allowed to perform partial matches on strings.
+
+### A Series of Failed Attempts
+
+Multiple attempts were made to write a test case that would kill these mutants. The core idea was to provide a string with leading or trailing text and assert that the `decomposeComponents` function would not parse it as a valid URI.
+
+However, every attempt to create a failing test case was unsuccessful. The `decomposeComponents` function, due to the greedy nature of the regex, would either parse the string in an unexpected way or throw an error that was not anticipated. My analysis of the code's behavior was repeatedly proven wrong by the test results.
+
+### An Unresolved Suspicion
+
+After numerous failures, and with your guidance, it has become clear that I am unable to create a scenario where the code behaves differently with and without the anchors. This leads to the suspicion that, within the context of how `decomposeComponents` is currently used, the `^` and `$` anchors may be redundant.
+
+While the anchors are semantically crucial for strict URI validation, the surviving mutants suggest that no existing code path relies on this strictness.
+
+### Decision 14: Document and Move On
+
+Given the repeated failures and the significant time spent on this issue, the decision has been made to document this as an unresolved mystery and move on. This is a pragmatic choice to prioritize progress over solving a deep and complex issue with the regex and its interaction with the test suite.
+
+- **Result:** The `StringLiteral` mutants in `splitUriRegex` will remain "Survived" for now. This documentation serves as a record of the investigation and my failure to resolve it.
+
+---
+## 15. Fifteenth Analysis: `splitUriRegex` Anchors Revisited
+
+- **File:** `src/_uri.js`
+- **Function:** `decomposeComponents`
+- **Location:** Lines 26 and 34
+- **Analysis:** The `StringLiteral` mutants that remove the start (`^`) and end (`$`) anchors from the `splitUriRegex` continue to survive. After extensive and repeated failed attempts to create a test case that would kill these mutants, and in the interest of time, a decision has been made to document them as a known issue and move on.
+
+### Decision 15: Document and Skip
+
+The inability to create a failing test case suggests a deep complexity in the interaction between the regex and the `decomposeComponents` function that is not immediately apparent. While the anchors are semantically important for strict URI validation, the existing codebase and test suite do not seem to rely on this strictness.
+
+- **Result:** The `StringLiteral` mutants for the `^` and `$` anchors in `splitUriRegex` will remain "Survived". This is a pragmatic decision to prioritize progress over a deep-dive into a complex and time-consuming issue.
 
 ---

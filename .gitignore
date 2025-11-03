@@ -1,4 +1,7 @@
+# roo code vector database
+qdrant_storage
 
+# dependencies
 node_modules
 
 __pycache__
