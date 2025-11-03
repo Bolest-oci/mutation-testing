@@ -1,3 +1,4 @@
 [submodule "_spikes/stryker-playground/uri"]
 	path = _spikes/stryker-playground/uri
 	url = https://github.com/gratex/uri.git
+	branch = stryker
