@@ -294,3 +294,114 @@ We will document this finding and move on. This is a good example of how `Stryke
 - **Result:** This line is intentionally not being tested for mutations. We will leave it as is and proceed to the next solvable mutant.
 
 ---
+## 9. Ninth Analysis: `decodeSegments` Quick Exit
+
+- **File:** `src/_uri.js`
+- **Function:** `decodeSegments`
+- **Location:** Line 285
+- **Analysis:** A `BlockStatement` mutant survived by removing the quick exit `if (encodedPath === '') { return []; }`. This was possible because the subsequent `split` and `map` operations would also result in an empty array for an empty input string. The user explicitly requested to keep this quick exit.
+
+### Decision 9: Disable Mutation Testing for Quick Exit
+
+Following the user's instruction to keep the quick exit for performance, the `// Stryker disable next-line all` directive was added to prevent mutation testing on this line.
+
+**Before:**
+```javascript
+function decodeSegments(encodedPath) {
+    if (encodedPath === '') {
+        return [];
+    }
+    const segments = encodedPath.split('/');
+    if (segments.shift() !== '') {
+        throw new Error('path-abempty expected');
+    }
+    return segments.map((segment) => decodeURIComponent(segment));
+}
+```
+
+**After:**
+```javascript
+function decodeSegments(encodedPath) {
+    // Stryker disable next-line all // (quick exit only, no logic change)
+    if (encodedPath === '') {
+        return [];
+    }
+    const segments = encodedPath.split('/');
+    if (segments.shift() !== '') {
+        throw new Error('path-abempty expected');
+    }
+    return segments.map((segment) => decodeURIComponent(segment));
+}
+```
+
+- **Result:** The `BlockStatement` mutant was no longer reported as "Survived" due to the Stryker directive. The functional tests passed, and the mutation score improved to **94.52%**.
+
+---
+## 10. Tenth Analysis: `encodeSegments` Array Type Check
+
+- **File:** `src/_uri.js`
+- **Function:** `encodeSegments`
+- **Location:** Line 304
+- **Analysis:** A `ConditionalExpression` mutant survived because there was no test case that called `encodeSegments` with a non-array argument. The `if (!(segments instanceof Array))` check was not fully covered.
+
+### Decision 10: Add a new test case for non-array input
+
+A new test case was added to `_spikes/stryker-playground/uri/test/_uri.test.js` to specifically test the `IllegalArgumentException` when a non-array is passed to `encodeSegments`.
+
+**New Test Added:**
+```javascript
+test('encodeSegments should throw error for non-array input', () => {
+    expect(() => uri.encodeSegments('not an array')).toThrow('IllegalArgumentException, array of segments expected');
+});
+```
+
+- **Result:** The new, more specific test passed and successfully **killed** the `ConditionalExpression` and `BlockStatement` mutants related to the array type check. The mutation score improved to **95.34%**.
+
+---
+## 11. Eleventh Analysis: `decodeSegments` Error Message
+
+- **File:** `src/_uri.js`
+- **Function:** `decodeSegments`
+- **Location:** Line 291
+- **Analysis:** A `StringLiteral` mutant survived by changing the error message `path-abempty expected` to an empty string. This was possible because the test only checked that an error was thrown, not for the specific message.
+
+### Decision 11: Strengthen the Test Case
+
+Following the user's instruction, a new line was added to the existing test case to assert the specific error message.
+
+**Test Change:**
+```diff
+<<<<<<< SEARCH
+:start_line:321
+-------
+        expect(() => uri.decodeSegments(' /a')).toThrow();
+    });
+=======
+        expect(() => uri.decodeSegments(' /a')).toThrow();
+        expect(() => uri.decodeSegments(' /a')).toThrow('path-abempty expected');
+    });
+>>>>>>> REPLACE
+```
+
+- **Result:** The new assertion in the test successfully **killed** the `StringLiteral` mutant. The mutation score improved from 95.34% to **95.62%**.
+
+---
+## 12. Twelfth Analysis: `isSubordinate` Authority Check
+
+- **File:** `src/_uri.js`
+- **Function:** `isSubordinate`
+- **Location:** Line 323
+- **Analysis:** A `ConditionalExpression` mutant survived in the `isSubordinate` function. The mutant replaced `uriSub.authority != null` with `true`, which caused the check to fail when `uriSub.authority` was `null`.
+
+### Decision 12: Add a new test case for `null` sub-authority
+
+The user provided a new test case that correctly triggers the `null` sub-authority check.
+
+**New Test Added:**
+```javascript
+[ '//john.doe@www.example.com:123/forum/questions/', '/forum/questions/', true, true ]
+```
+
+- **Result:** The new test case successfully **killed** the `ConditionalExpression` mutant. The mutation score improved from 95.62% to **95.89%**.
+
+---
