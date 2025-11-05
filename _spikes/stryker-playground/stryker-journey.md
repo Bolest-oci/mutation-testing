@@ -4,12 +4,11 @@ This document tracks the process of improving the mutation score for `_uri.js` b
 
 ## Current Status
 
-**Mutation Score:** 99.13%
+**Mutation Score:** 99.42%
 
-**Survived Mutants (3):**
+**Survived Mutants (2):**
 
-*   **`isSubordinate` (1 mutant):** A `ConditionalExpression` mutant in the `isSubordinate` function at line 323.
-*   **`splitUriRegex` (2 mutants):** The `^` and `$` anchors, which are not covered by the current test suite. See [Section 14](#14-fourteenth-analysis-the-splituriregex-anchor-mystery) for details.
+*   **`splitUriRegex` (2 mutants):** The `^` and `$` anchors, which are not covered by the current test suite. See [Section 15](#15-fifteenth-analysis-the-splituriregex-anchor-mystery) for details.
 
 ---
 
@@ -444,19 +443,19 @@ The user provided a new test case that correctly triggers the `null` sub-authori
 
 - **File:** `src/_uri.js`
 - **Function:** `isSubordinate`
-- **Location:** Line 327
+- **Location:** Line 325
 - **Analysis:** A `ConditionalExpression` mutant survived in the `isSubordinate` function. The mutant replaced `(orSame || uriSub.path.length !== uriParent.path.length)` with `true`. This was possible because there was no test case where the paths were identical and `orSame` was `false`.
 
 ### Decision 13: Add a new test case for identical paths with `orSame` as `false`
 
-The user provided a new test case that correctly tests this scenario.
+A new test case was added to the `isSubordinateData` array to cover this specific scenario.
 
 **New Test Added:**
 ```javascript
 [ '/a/b', '/a/b', false, false ]
 ```
 
-- **Result:** The new test case successfully **killed** the `ConditionalExpression` mutant. The mutation score improved from 95.89% to **96.16%**.
+- **Result:** The new test case successfully **killed** the `ConditionalExpression` mutant. The mutation score improved from **99.13%** to **99.42%**.
 
 ---
 ## 14. Fourteenth Analysis: The `splitUriRegex` Anchor Mystery
