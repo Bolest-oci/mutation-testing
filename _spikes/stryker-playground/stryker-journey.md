@@ -499,3 +499,181 @@ The inability to create a failing test case suggests a deep complexity in the in
 
 
 ---
+
+## 16. Sixteenth Analysis: `uri.js` - `equals` method
+
+- **File:** `src/uri.js`
+- **Function:** `equals`
+- **Location:** Line 222
+- **Analysis:** A `ConditionalExpression` mutant survived by replacing `(ignoreFragment || fragment === fragment2)` with `true`. This made the fragment comparison always pass. The existing tests either compared identical fragments or had the `ignoreFragment` flag set to `true`.
+- **Decision:** Add a test case that compares two URIs that differ only in their fragment, with `ignoreFragment` set to `false`.
+
+**New Test Added:**
+```javascript
+// Kills ConditionalExpression mutant in equals (src/uri.js:222:10)
+test('equals should return false for different fragments when not ignoring fragments', () => {
+    expect(Uri.equals('http://a.com#foo', 'http://a.com#bar', false)).toBe(false);
+});
+```
+
+- **Result:** The new test successfully **killed** the mutant. The mutation score for `uri.js` is now **89.82%**. The `BlockStatement` mutant in `equalsQueryStr` that I also targeted survived, so that test has been commented out.
+
+---
+
+## 17. Seventeenth Analysis: `uri.js` - `equalsQueryStr` and `equals`
+
+After discovering that `uri.js` exports a static library and not a constructor, I was able to write effective tests that killed two more survived mutants.
+
+### Decision 17.1: Kill `LogicalOperator` in `equalsQueryStr`
+
+- **File:** `src/uri.js`
+- **Function:** `equalsQueryStr`
+- **Location:** Line 41
+- **Analysis:** A `LogicalOperator` mutant (`&&` -> `||`) survived because no test compared a query where a key had a single value against a query where the same key had multiple values.
+- **New Test Added:**
+  ```javascript
+  // Kills LogicalOperator mutant in equalsQueryStr (src/uri.js:41:13)
+  test('equalsQueryStr should return false if a key has different number of values', () => {
+      expect(Uri.equalsQueryStr('a=1&a=2', 'a=1')).toBe(false);
+  });
+  ```
+- **Result:** The test passed and **killed** the mutant.
+
+### Decision 17.2: Kill `ConditionalExpression` in `equals`
+
+- **File:** `src/uri.js`
+- **Function:** `equals`
+- **Location:** Line 222
+- **Analysis:** A `ConditionalExpression` mutant survived by effectively ignoring the fragment comparison. No test compared two URIs that differed only by their fragment.
+- **New Test Added:**
+  ```javascript
+  // Kills ConditionalExpression mutant in equals (src/uri.js:222:10)
+  test('equals should return false for different fragments when not ignoring fragments', () => {
+      expect(Uri.equals('http://a.com#foo', 'http://a.com#bar', false)).toBe(false);
+  });
+  ```
+- **Result:** The test passed and **killed** the mutant.
+
+The overall mutation score for `uri.js` is now **90.08%**.
+
+---
+
+## 18. Eighteenth Analysis: `uri.js` - Correcting Test Syntax
+
+After discovering that `uri.js` exports a static library, I was able to correct the syntax in my tests and successfully kill two mutants.
+
+### Decision 18.1: Kill `LogicalOperator` in `equalsQueryStr`
+
+- **File:** `src/uri.js`
+- **Function:** `equalsQueryStr`
+- **Location:** Line 41
+- **Analysis:** A `LogicalOperator` mutant (`&&` -> `||`) survived because no test compared a query where a key had a single value against a query where the same key had multiple values.
+- **New Test Added:**
+  ```javascript
+  test('equalsQueryStr should return false if a key has different number of values', () => {
+      expect(Uri.equalsQueryStr('a=1&a=2', 'a=1')).toBe(false);
+  });
+  ```
+- **Result:** The test passed and **killed** the mutant.
+
+### Decision 18.2: Kill `ConditionalExpression` in `equals`
+
+- **File:** `src/uri.js`
+- **Function:** `equals`
+- **Location:** Line 222
+- **Analysis:** A `ConditionalExpression` mutant survived by effectively ignoring the fragment comparison. No test compared two URIs that differed only by their fragment.
+- **New Test Added:**
+  ```javascript
+  test('equals should return false for different fragments when not ignoring fragments', () => {
+      expect(Uri.equals('http://a.com#foo', 'http://a.com#bar', false)).toBe(false);
+  });
+  ```
+- **Result:** The test passed and **killed** the mutant.
+
+The overall mutation score for `uri.js` is now **90.08%**. My attempt to kill a `BlockStatement` mutant in `equalsQueryStr` failed and has been discarded.
+
+---
+
+## 19. Nineteenth Analysis: `uri.js` - Resolving the `equalsQueryStr` Mutants
+
+After several failed attempts, the group of mutants in the initial check of the `equalsQueryStr` function was finally resolved through a combination of a new test case and the exclusion of an unkillable mutant.
+
+### Decision 19.1: Kill `BlockStatement` and `ConditionalExpression`
+
+- **File:** `src/uri.js`
+- **Function:** `equalsQueryStr`
+- **Location:** Line 49
+- **Analysis:** The `BlockStatement` and `ConditionalExpression` mutants survived because my test cases (`(null, 'a=1')` and `(null, null)`) did not correctly trigger a failure. The key was to find a case where the original code returned a different value than the mutated code's downstream path.
+- **User-Provided Test:** You provided the crucial insight with the following test:
+  ```javascript
+  test('equalsQueryStr treats null and undefined as different values', () => {
+      expect(Uri.equalsQueryStr(undefined, null)).toBe(false);
+      expect(Uri.equalsQueryStr(null,undefined)).toBe(false); 
+  });
+  ```
+- **Result:** This test successfully caused the mutated code to throw a `TypeError` where the original code returned `false`, effectively **killing** both the `BlockStatement` and `ConditionalExpression` mutants.
+
+### Decision 19.2: Exclude Unkillable `LogicalOperator` Mutant
+
+- **File:** `src/uri.js`
+- **Function:** `equalsQueryStr`
+- **Location:** Line 49
+- **Analysis:** The `LogicalOperator` mutant (`||` -> `&&`) was determined to be unkillable. For every input combination, the mutated code produced the same final result as the original code, making it impossible to kill with a test. This indicates the logic is redundant for this specific mutation.
+- **Action:** You added a `// Stryker disable next-line LogicalOperator` comment to the source code.
+- **Result:** The mutant is now correctly ignored by Stryker, and the mutation score accurately reflects the testable code.
+
+With these changes, the mutation score for `uri.js` increased to **90.82%**.
+
+---
+
+## 20. Twentieth Analysis: `uri.js` - The Importance of Sorting
+
+The final mutant was killed by a user-provided test case that highlighted the importance of sorting for query string equality.
+
+### Decision 20.1: Kill `MethodExpression` in `equalsQueryStr`
+
+- **File:** `src/uri.js`
+- **Function:** `equalsQueryStr`
+- **Location:** Line 44
+- **Analysis:** A `MethodExpression` mutant survived by removing the `.sort(simpleCompare)` call. This was possible because no existing test compared two query strings that had the same multi-valued parameters in a different order.
+- **User-Provided Test:** You added the following test case to `uri.test.js`:
+  ```javascript
+  ['a=1&a=2&a=3', 'a=3&a=2&a=1', true]
+  ```
+- **Result:** This test provided two arrays, `['1', '2', '3']` and `['3', '2', '1']`. The original code sorts them to be identical, but the mutated code compares the unsorted, unequal arrays. This caused the test to fail, which **killed** the mutant. The final mutation score is now **91.07%**.
+
+---
+
+**Note:** All successful tests originally added to `uri.test2.js` have since been integrated into the main test file, `uri.test.js`.
+
+---
+
+## 22. Twenty-Second Analysis: Final Refactoring of `_resolve`
+
+After a deep analysis of the `_uri.js` library, it was definitively confirmed that the `StringLiteral` mutant in the `_resolve` function was unkillable by any test case, as the temporary scheme's value had no bearing on the final output. The correct solution was to refactor the code for clarity and then formally ignore the resulting unkillable mutant.
+
+### Decision 22.1: Refactor and Ignore
+
+- **File:** `src/uri.js`
+- **Function:** `_resolve`
+- **Location:** Line 66
+- **Analysis:** The original function temporarily modified its input `base` object, which is a code smell. After refactoring it to use a clone, a new `StringLiteral` mutant appeared on the cloned object, proving the value was irrelevant.
+- **Final Code:**
+  ```javascript
+  function _resolve(base, ref) {
+      // less strict version of uri.resolve, scheme is not required
+      if (base.scheme) {
+          return uri.resolve(base, ref);
+      }
+      // If no scheme, create a temporary clone with a default scheme for resolving.
+      // Stryker disable next-line StringLiteral: The value of the temporary scheme does not matter, it is only there to pass a `scheme != null` check.
+      const tempBase = Object.assign({}, base, { scheme: 'whatever' });
+      const s = uri.resolve(tempBase, ref);
+      // The result `s` will have a scheme. We need to remove it.
+      delete s.scheme;
+      return s;
+  }
+  ```
+- **Result:** The code is now cleaner and avoids side effects. The `Stryker disable` comment correctly removes the unkillable mutant from the report. The final mutation score for `uri.js` is **91.21%**.
+
+---
