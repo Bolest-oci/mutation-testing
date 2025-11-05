@@ -414,6 +414,7 @@ The user provided a new test case that correctly triggers the `null` sub-authori
 
 - **Result:** The new test case successfully **killed** the `ConditionalExpression` mutant. The mutation score improved from 95.62% to **95.89%**.
 
+
 ---
 ## 13. Thirteenth Analysis: `isSubordinate` `orSame` Flag
 
@@ -472,5 +473,6 @@ Given the repeated failures and the significant time spent on this issue, the de
 The inability to create a failing test case suggests a deep complexity in the interaction between the regex and the `decomposeComponents` function that is not immediately apparent. While the anchors are semantically important for strict URI validation, the existing codebase and test suite do not seem to rely on this strictness.
 
 - **Result:** The `StringLiteral` mutants for the `^` and `$` anchors in `splitUriRegex` will remain "Survived". This is a pragmatic decision to prioritize progress over a deep-dive into a complex and time-consuming issue.
+
 
 ---
