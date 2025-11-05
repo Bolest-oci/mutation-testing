@@ -26,6 +26,8 @@ When adding tests, prefer adding new, more specific tests rather than modifying 
 act based on the answer.
 ### 5. Document the Journey
 After each significant change (code refactoring or new test), update the `_spikes/stryker-playground/stryker-journey.md` report with a summary of the mutant, the decision made, and the result. Include diffs for clarity.
+29 | After each significant change (code refactoring or new test), update the `_spikes/stryker-playground/stryker-journey.md` report with a summary of the mutant, the decision made, and the result. Include diffs for clarity.
+30 | Always update the "Current Status" chapter with the new mutation score and the list of remaining survived mutants.
 
 
 
