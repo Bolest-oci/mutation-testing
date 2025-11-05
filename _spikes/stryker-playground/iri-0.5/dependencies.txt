@@ -1,0 +1,16 @@
+
+Runtime:
+   icu4j_3_4.jar
+   
+Compile-time, Build-time:
+   junit.jar
+   JFlex.jar  (version 1.4.1) 
+   
+See license information under the doc directory, or on the web 
+site for more information concerning the JFlex dependency.
+
+   
+
+
+
+
