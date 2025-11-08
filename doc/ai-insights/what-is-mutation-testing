@@ -1,0 +1,247 @@
+
+
+Mostly about what is mutational testing
+
+
+
+
+Human taken notes, 
+mostly from conversation with AI
+but also from reading wikipedia mutation testing page 
+and from conversation with several people
+
+the notes were then formated using AI 
+and translated using AI
+
+
+- what is missing is the fact that you can use this mutation testing
+to find code to refactor / reformat,
+
+like for example when deleting part of code does not  give red color  on test
+the part of code is often reduntant
+
+
+also could be mentioned more extensively:
+
+- Equivalent mutants: Some mutants, though syntactically different, 
+might be behaviourally equivalent to the original program 
+(i.e., the change doesn’t actually cause any difference in external behaviour).
+ These are tricky because you cannot expect the tests to kill them. 
+ Many sources say you should exclude equivalent mutants from the denominator when calculating the mutation score
+ - this could be on place where mutational score is explained
+ 
+ - Cost/complexity:  (and fact that AI could help with this)
+ Practical adoption of mutation testing is limited by computational cost 
+ (generating and testing many mutants) 
+ and by human effort (e.g., identifying equivalent mutants).
+https://mutationtesting.uni.lu/theory.php
+
+- Scope: 
+Mutation testing is usually applied at the unit-test level
+
+
+______________________________-
+EN
+-----------------------------
+
+
+
+Mutation Testing (this is the same as Mutation-based testing)
+
+Basically, it is testing the tests themselves.
+
+The goal is to verify whether the tests work correctly
+and what their code coverage is.
+
+A test should be green when the code is correct — this is the first condition of a good test.
+
+The second condition is that the test should be able to detect an error in the program — in that case, it should be red.
+
+If a test cannot detect an error, it means it is a bad test.
+
+MUTATION TESTING
+
+is a specific method of testing tests
+(and especially those that are already in use).
+
+It works by intentionally introducing errors into the code — so-called mutations —
+and then testing this code.
+If the test “does not turn red,” it means it did not catch the error,
+and therefore it is not a good test.
+
+If I understand correctly, these mutations
+are intentionally inserted errors, created systematically, for example:
+
+swapping True for False
+
+replacing arithmetic operators (+, -, /, …)
+
+changing types, e.g., str to int, int to double
+
+changing mutability properties, e.g., const to var or “value”
+
+removing or disabling part of the code or a function
+
+syntactic or logical changes (e.g., > → >=, + → -, return x → return x+1)
+
+constants to variables or mutable vs immutable values
+
+These mutants can be classified by type,
+and their basic types are predefined,
+so there is a certain number of mutation categories.
+
+These types of tests can also be combined in various ways.
+
+MUTATION SCORE
+
+Another concept is the mutation score (Mutation Score).
+
+This means that we insert X errors (i.e., different mutants) into the code
+and then run the tests that are supposed to detect these errors.
+
+Based on how many mutants the test fails on
+(i.e., detects the error — number of errors found = Y),
+we calculate the mutation score of the test.
+
+The result is given as a percentage — the higher the score, the better the tests perform.
+
+The correct formula is:
+Mutation Score = (Number of Mutants Killed / Total Number of Mutants) * 100
+
+So, if we create 40 mutants and the test detects 20,
+the mutation score will be:
+20 / 40 * 100 = 50%
+
+Mutant survival means that the mutant “survived” —
+i.e., the test did not detect it.
+There can be various reasons for this,
+and the test can then be corrected or improved accordingly.
+
+Tools for Mutation Testing
+
+In theory, we could write mutation tests ourselves,
+(which would mostly be impractical — there are probably edge cases as well)
+but there are also various tools that automate this process.
+
+These tools have different levels of support —
+not all can generate all types of mutations,
+and some can even help with the analysis of mutation testing results (to varying degrees).
+
+Examples of tools by language (just some; there are more):
+
+Java: PITest
+
+JavaScript / TypeScript: Stryker
+
+Python: Mutmut, Cosmic Ray
+
+.NET: Stryker.NET
+
+PHP: Infection
+
+Ruby: Mutant
+
+
+___________________________-
+SK
+---------------------
+Mutačné testovanie (je to to isté ako Mutation-based testing)
+
+v podstate ide o testovanie samotných testov
+
+Cieľom je overiť, či testy fungujú správne
+a aké majú pokrytie kódu.
+
+Test má byť zelený, keď je kód správny — to je prvá podmienka dobrého testu.
+
+Druhá podmienka je, že test by mal vedieť odhaliť chybu v programe — vtedy má byť červený.
+
+Ak test nedokáže zachytiť chybu, znamená to, že ide o zlý test.
+
+
+MUTAČNÉ TESTOVANIE
+
+je jeden špecifický spôsob testovania testov
+(a najmä tých, ktoré sa už niekde používajú).
+
+Funguje tak, že do kódu zámerne vložíme chyby – tzv. mutácie –
+a následne tento kód testujeme.
+Ak test „nie je červený“, znamená to, že chybu nezachytil,
+a teda nejde o dobrý test.
+
+Ak to správne chápem, tieto mutácie
+sú zámerne vložené chyby, vytvárané systematicky, napríklad:
+
+zameníme True za False
+
+vymeníme aritmetické operátory (+, -, /, …)
+
+zmeníme typy, napr. str na int, int na double
+
+zmeníme vlastnosti mutability, napr. const na var alebo „value“
+
+- odstránime alebo vypneme časť kódu či funkciu
+- syntaktické alebo logické zmeny (napr. > → >=, + → -, return x → return x+1).
+- konštanty na premennú alebo mutable vs immutable hodnotu.
+
+Tieto mutanti sa dajú klasifikovať podľa druhu,
+a ich typy základné sú vopred definované,
+teda existuje určitý počet kategórií mutácií
+
+
+Tieto druhy testov sa aj dajú rôzne kombinovať
+
+
+
+
+MUTAČNÉ SKÓRE
+
+Ďalším pojmom je mutačné skóre (Mutation Score).
+
+To znamená, že do kódu vložíme X chýb (teda rôznych mutantov)
+a následne spustíme testy, ktoré majú tieto chyby odhaliť.
+
+Podľa toho, na koľkých mutantoch test zlyhá
+(teda nájde chybu – počet nájdených chýb = Y),
+vypočítame mutačné skóre testu.
+
+Výsledok sa udáva v percentách – čím vyššie skóre, tým lepšie testy fungujú.
+
+Správny vzorec je:
+Mutation Score = (Number of Mutants Killed / Total Number of Mutants) * 100
+
+Teda ak vytvoríme 40 mutantov a test zachytí 20,
+mutačné skóre bude:
+20 / 40 * 100 = 50 %
+
+Mutant survival znamená, že mutant „prežil“ –
+teda test ho neodhalil.
+Môže to mať rôzne dôvody,
+a podľa toho sa test dá následne opraviť alebo vylepšiť.
+
+
+
+
+Nástroje pre mutačné testovanie
+
+Mutačné testy by sme si teoreticky mohli písať aj sami,
+(čo by však ale bolo väčšinou nepraktické (určite sú aj nejaké edge cases?) )
+ale existujú aj rôzne nástroje, ktoré tento proces automatizujú.
+
+Tieto nástroje majú rôznu úroveň podpory –
+nie všetky dokážu generovať všetky typy mutácií,
+a niektoré dokonca vedia aj pomôcť s analýzou výsledkov mutačného testovania (do rôznej miery).
+
+Príklady nástrojov podľa jazyka (len niektoré je ich aj viac):
+
+Java: PITest
+
+JavaScript / TypeScript: Stryker
+
+Python: Mutmut, Cosmic Ray
+
+.NET: Stryker.NET
+
+PHP: Infection
+
+Ruby: Mutant
