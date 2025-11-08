@@ -1,3 +1,6 @@
+Wikipedia - simple explanation of mutation testing
+https://en.wikipedia.org/wiki/Mutation_testing
+
 Mutation Testing In Software Testing | Mutation Testing In Software Engineering | Mutation Testing
 https://www.youtube.com/watch?v=AIOh1zcZmh8
 
@@ -30,5 +33,6 @@ algortihms_for_mutation_based_testing.pdf 2005 !!!
 Mutation-Based Approach to Supporting Human–Machine.pdf 
 README.md
 What is Mutation Testing(Code Mutation Analysis).pdf
+
 
 mutation_testing.pdf
