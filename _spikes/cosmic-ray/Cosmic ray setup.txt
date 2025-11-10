@@ -1,0 +1,80 @@
+Cosmic ray setup on project
+
+install cosmic ray
+pip install cosmic-ray
+cosmic-ray –version
+
+create config toml file in project root using:
+cosmic-ray new-config cosmic-ray-config.toml
+
+
+or just create cosmic-ray-config.toml and insert this urself:
+
+f.e
+
+[cosmic-ray]
+module-path = "src/validators/finance.py"
+timeout = 10.0
+excluded-modules = []
+test-command = "pytest -q tests/test_finance.py"
+
+[cosmic-ray.distributor]
+name = "http"
+
+[cosmic-ray.distributor.http]
+worker-urls = [
+    "http://localhost:9001",
+    "http://localhost:9002",
+    "http://localhost:9003",
+    "http://localhost:9004",
+    "http://localhost:9005",
+    "http://localhost:9006",
+    "http://localhost:9007",
+    "http://localhost:9008",
+    "http://localhost:9009",
+    "http://localhost:9010",
+    "http://localhost:9011",
+    "http://localhost:9012"
+]
+
+
+module path explains what we want to mutate
+timeout how long do we want to wait on tests before claiming them to be incompetent
+excluded modules - exclude modules which u dont want to mutate in selected packages
+test command - set ur test command
+[cosmic-ray.distributor]  can be local or http
+local – runs mutations in a single thread within the current process (slower but simple setup)
+http – uses multiple workers running as separate processes (on different ports), allowing mutations to run in parallel almost linearly faster
+
+[cosmic-ray.distributor.http]
+worker-urls = [.....] - if we choose http then we list worker ulrs here
+
+
+*ONLY NECESSARY IF PARALLEL*********
+*
+*if u use parallel u must have git repo initialized, since it makes copies of repo from it
+*git init
+*git add .
+*git commit -m "whatever"
+*
+*
+*auto creates workers based on your config file:
+*cr-http-workers cosmic-ray-config.toml .
+*
+*ONLY NECESSARY IF PARALLEL*********
+
+
+tests if ur tests selection works before mutations:
+cosmic-ray --verbosity=INFO baseline cosmic-ray-config.toml
+
+initializes cosmic-ray.sqlite which fills with all possible mutations
+cosmic-ray init cosmic-ray-config.toml cosmic-ray.sqlite –force
+
+executes mutations:
+cosmic-ray exec cosmic-ray-config.toml cosmic-ray.sqlite
+
+
+Generate report types: (You can do this while mutations are running on another tab)
+cosmic-ray dump cosmic-ray.sqlite
+cr-report cosmic-ray.sqlite
+cr-html cosmic-ray.sqlite  > report.html  
