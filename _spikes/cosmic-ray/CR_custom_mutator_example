@@ -1,1 +1,24 @@
+https://cosmic-ray.readthedocs.io/en/latest/how-tos/operators.html
+
+especially 
+Creating the plugin
+
+
+Modify setup.py with a new entry_points argument to setup():
+
+//add path to new mutator operators
+setup(
+    . . .
+    entry_points={
+        'cosmic_ray.operator_providers': [
+            'example = example.provider:Provider'
+        ]
+    })
+
+
+
+Now when Cosmic 
+Ray queries the cosmic_ray.operator_providers entry point 
+it will see your provider - and hence your operator - along with all of the others.
+
 
