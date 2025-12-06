@@ -38,19 +38,29 @@ RooCode Agent
       name = "local"
       ```
 
-4.  **Run the Mutation Test:**
+4.  **Commit Setup Changes:**
+    - Agent stages all modified files, which include the dependency updates and the new Cosmic Ray configuration.
+      ```bash
+      git add .
+      ```
+    - Agent commits the changes:
+      ```bash
+      git commit -m "build: Add Cosmic Ray for mutation testing"
+      ```
+
+5.  **Run the Mutation Test:**
     - Agent runs Cosmic Ray:
       ```bash
       cosmic-ray run cosmic-ray.toml
       ```
 
-5.  **Report the Results:**
+6.  **Report the Results:**
     - Agent presents the results from the Cosmic Ray run to the user. This might involve parsing the output or pointing the user to the generated report.
       ```bash
       cosmic-ray report
       ```
 
-6.  **Deactivate Environment and Return:**
+7.  **Deactivate Environment and Return:**
     - If a virtual environment was activated during the installation process, the agent deactivates it.
       ```bash
       deactivate
