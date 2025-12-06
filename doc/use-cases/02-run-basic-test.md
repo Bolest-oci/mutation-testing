@@ -24,17 +24,19 @@ RooCode Agent
     - Agent runs the test command specified for the project (e.g., `pytest`, `python -m unittest discover`).
     - **Verification:** If any tests fail, the process stops and reports the failure to the user. Mutation testing cannot proceed with a broken test suite.
 
-3.  **Create a Cosmic Ray Configuration:**
-    - Agent creates a `cosmic-ray.toml` configuration file in the submodule's root directory.
-    - The configuration will specify the module to be mutated, the test command, and other relevant options.
+3.  **Create a Minimal Cosmic Ray Configuration:**
+    - To ensure the setup is working correctly, the agent first creates a minimal configuration that targets a single, small module.
+    - Agent lists the files in the project's source directory to identify a suitable small file (e.g., `ls -1 src/my_project`).
+    - Agent creates a `cosmic-ray.toml` file with the `module-path` pointing to the selected file.
       ```toml
+      # Example minimal configuration
       [cosmic-ray]
-      module-path = "src" # Or the appropriate source directory
+      module-path = "src/my_project/small_file.py"
       test-command = "pytest" # Or the command to run the tests
       timeout = 30
       excluded-modules = []
 
-      [cosmic-ray.execution-engine]
+      [cosmic-ray.distributor]
       name = "local"
       ```
 
@@ -49,15 +51,19 @@ RooCode Agent
       ```
 
 5.  **Run the Mutation Test:**
-    - Agent runs Cosmic Ray:
+    - Agent initializes the session, creating a session file and overwriting any existing session.
       ```bash
-      cosmic-ray run cosmic-ray.toml
+      cosmic-ray init --force cosmic-ray.toml session.sqlite
+      ```
+    - Agent executes the mutation tests using the config and session files:
+      ```bash
+      cosmic-ray exec cosmic-ray.toml session.sqlite
       ```
 
 6.  **Report the Results:**
-    - Agent presents the results from the Cosmic Ray run to the user. This might involve parsing the output or pointing the user to the generated report.
+    - Agent presents the results from the Cosmic Ray run to the user.
       ```bash
-      cosmic-ray report
+      cr-report session.sqlite
       ```
 
 7.  **Deactivate Environment and Return:**
