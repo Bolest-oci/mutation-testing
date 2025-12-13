@@ -1,0 +1,12 @@
+from setuptools import setup, find_packages
+
+setup(
+    name="shuffle_tuple",
+    version="0.1.0",
+    packages=find_packages(),
+    entry_points={
+        "cosmic_ray.operator_providers": [
+            "shuffle_tuple = shuffle_tuple.provider:Provider"
+        ]
+    },
+)
