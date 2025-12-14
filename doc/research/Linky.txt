@@ -36,3 +36,14 @@ What is Mutation Testing(Code Mutation Analysis).pdf
 
 
 mutation_testing.pdf
+
+
+
+
+
+some python mutation tool I think was not mentioned yet, called poodle, for python 3.19-3.12
+and document where I found it
+
+https://poodle.readthedocs.io/en/latest/
+https://reu.techconf.org/document/01-Publications/An_Analysis_and_Comparison_of_Mutation_Testing_Tools_for_Python.pdf
+
