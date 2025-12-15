@@ -1,0 +1,35 @@
+[cosmic-ray]
+module-path = "src/validators/finance.py"
+timeout = 10.0
+excluded-modules = []
+test-command = "pytest --tb=short -q tests/test_finance.py"
+
+#Exclude unwanted mutation operators
+[cosmic-ray.filters.operators-filter]
+exclude-operators = [
+    "core/ReplaceUnaryOperator_.*",
+    "core/AddNot",
+    "core/ReplaceTrueWithFalse",
+    "core/ReplaceFalseWithTrue",
+    "core/ReplaceAndWithOr",
+    "core/ReplaceOrWithAnd",
+    "core/ReplaceBreakWithContinue",
+    "core/ReplaceContinueWithBreak",
+    "core/ExceptionReplacer",
+    "core/RemoveDecorator",
+    "core/ReplaceBinaryOperator_.*_(RShift|LShift|BitOr|BitAnd|BitXor|Pow)",
+    "core/ReplaceBinaryOperator_(RShift|LShift|BitOr|BitAnd|BitXor|Pow)_.*",
+    "core/ReplaceComparisonOperator_Eq_(Lt|LtE|Gt|GtE|Is|IsNot)",
+    "core/ReplaceComparisonOperator_NotEq_(Lt|LtE|Gt|GtE|Is|IsNot)",
+    "core/ReplaceComparisonOperator_(Lt|LtE|Gt|GtE)_.*",
+    "core/ReplaceComparisonOperator_(Is|IsNot)_.*",
+]
+
+[cosmic-ray.distributor]
+name = "local"
+
+#Looks for changed lines from the given git branch.
+#Any mutation that would mutate other lines is skipped.
+#By default the master branch is used.
+[cosmic-ray.filters.git-filter]
+branch = "main"

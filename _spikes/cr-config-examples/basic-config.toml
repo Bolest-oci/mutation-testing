@@ -1,0 +1,14 @@
+[cosmic-ray]
+# The path to the module that Cosmic Ray will mutate and test.
+#the ‘module-path’ can be a list of directories or files: module-path = [“file1.py”, “some_directory”]
+module-path = "src/validators/finance.py"
+# The maximium amount of time to let a test run before it’s considered a failure:
+timeout = 10.0
+# A list of modules to exclude from mutation testing.
+excluded-modules = []
+# The command to execute tests. Cosmic Ray will run this command after each mutation.
+test-command = "pytest --tb=short -q tests/test_finance.py"
+
+[cosmic-ray.distributor]
+# Specifies the name of the distributor to use. "local" means tests only one mutation at a time.
+name = "local"

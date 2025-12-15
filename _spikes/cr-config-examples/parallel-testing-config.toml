@@ -1,0 +1,29 @@
+[cosmic-ray]
+module-path = "src/validators/domain.py"
+timeout = 10.0
+excluded-modules = []
+test-command = "pytest --tb=short -q tests/test_domain.py"
+
+[cosmic-ray.distributor]
+# Specifies the name of the distributor to use.
+# "http" allows you to send mutation-and-test requests to workers running locally or remotely.
+# parallel mutations
+# https://cosmic-ray.readthedocs.io/en/latest/tutorials/distributed/index.html
+name = "http"
+
+# define ur workers, in this case local workers working in parralel
+[cosmic-ray.distributor.http]
+worker-urls = [
+    "http://localhost:9001",
+    "http://localhost:9002",
+    "http://localhost:9003",
+    "http://localhost:9004",
+    "http://localhost:9005",
+    "http://localhost:9006",
+    "http://localhost:9007",
+    "http://localhost:9008",
+    "http://localhost:9009",
+    "http://localhost:9010",
+    "http://localhost:9011",
+    "http://localhost:9012"
+]
