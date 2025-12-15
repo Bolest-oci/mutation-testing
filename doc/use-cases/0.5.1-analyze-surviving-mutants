@@ -1,0 +1,42 @@
+# Use Case: 05 - Analyze Surviving Mutants
+
+## Description
+This use case describes how the system analyzes surviving mutants from a mutation test run
+to identify weaknesses in the existing test suite.
+
+## Actor
+RooCode Agent
+
+## Preconditions
+- A mutation test has been executed successfully.
+- Mutation results are available (e.g., via Cosmic Ray reports).
+- The project test suite passes in its current state.
+
+## Flow
+1. **Load Mutation Results**
+   - Agent parses mutation testing output.
+   - Surviving mutants are identified and grouped by file, line, and mutator.
+
+2. **Map Mutants to Code Paths**
+   - Agent identifies the mutated code behavior.
+   - Agent determines what logical condition or branch was altered.
+
+3. **Detect Test Coverage Gaps**
+   - Agent analyzes existing tests that exercise the mutated code.
+   - Agent identifies missing assertions, missing input scenarios, or overly permissive tests.
+
+4. **Summarize Findings**
+   - Agent produces a structured summary of:
+     - Surviving mutant
+     - Probable reason it survived
+     - Affected test files (if any)
+
+## Postconditions
+- A clear list of test weaknesses is produced.
+- Each surviving mutant is associated with a likely test deficiency.
+
+## Source
+Derived from user story:
+- `doc/user-stories/05-test-fixes.md`: #5.0, #5.1
+
+---
