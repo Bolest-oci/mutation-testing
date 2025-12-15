@@ -24,22 +24,28 @@ RooCode Agent
     - Agent runs the test command specified for the project (e.g., `pytest`, `python -m unittest discover`).
     - **Verification:** If any tests fail, the process stops and reports the failure to the user. Mutation testing cannot proceed with a broken test suite.
 
-3.  **Create a Minimal Cosmic Ray Configuration:**
-    - To ensure the setup is working correctly, the agent first creates a minimal configuration that targets a single, small module.
-    - Agent lists the files in the project's source directory to identify a suitable small file (e.g., `ls -1 src/my_project`).
-    - Agent creates a `cosmic-ray.toml` file with the `module-path` pointing to the selected file.
-      ```toml
-      # Example minimal configuration
-      [cosmic-ray]
-      module-path = "src/my_project/small_file.py"
-      test-command = "pytest" # Or the command to run the tests
-      timeout = 30
-      excluded-modules = []
+3. **Create a Minimal Cosmic Ray Configuration:**
+   - To ensure the setup is working correctly, the agent first creates a minimal configuration
+     that targets a single, small module.
+   - Agent lists the files in the project's source directory to identify a suitable small file
+     (e.g., `ls -1 src/my_project`).
 
-      [cosmic-ray.distributor]
-      name = "local"
-      ```
+   - The agent creates a Cosmic Ray configuration file using one of the following approaches:
 
+     **a, Interactive configuration (if supported):**
+     - The agent runs:
+       ```bash
+       cosmic-ray new-config cosmic-ray.toml
+       ```
+     - During the interactive setup, the agent selects the execution variant defined in one of:
+       - **Use Case 02.a – Run Basic Test Local**
+       - **Use Case 02.b – Run Basic Test Http**
+
+     **b, Manual configuration (if interactive prompting is not supported by the agent):**
+     - The agent creates a `cosmic-ray.toml` file manually.
+     - The content of the configuration file corresponds to the selected execution variant:
+       - **Use Case 02.a – Run Basic Test Local**
+       - **Use Case 02.b – Run Basic Test Http**
 4.  **Commit Setup Changes:**
     - Agent stages all modified files, which include the dependency updates and the new Cosmic Ray configuration.
       ```bash
