@@ -2,3 +2,6 @@
 	path = _spikes/stryker-playground/uri
 	url = https://github.com/gratex/uri.git
 	branch = stryker
+[submodule "repos/validators"]
+	path = repos/validators
+	url = https://github.com/python-validators/validators
