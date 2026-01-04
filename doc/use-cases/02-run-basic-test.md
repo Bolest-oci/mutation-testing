@@ -25,27 +25,13 @@ RooCode Agent
     - **Verification:** If any tests fail, the process stops and reports the failure to the user. Mutation testing cannot proceed with a broken test suite.
 
 3. **Create a Minimal Cosmic Ray Configuration:**
-   - To ensure the setup is working correctly, the agent first creates a minimal configuration
-     that targets a single, small module.
-   - Agent lists the files in the project's source directory to identify a suitable small file
-     (e.g., `ls -1 src/my_project`).
-
-   - The agent creates a Cosmic Ray configuration file using one of the following approaches:
-
-     **a, Interactive configuration (if supported):**
-     - The agent runs:
-       ```bash
-       cosmic-ray new-config cosmic-ray.toml
-       ```
-     - During the interactive setup, the agent selects the execution variant defined in one of:
-       - **Use Case 02.a – Run Basic Test Local**
-       - **Use Case 02.b – Run Basic Test Http**
-
-     **b, Manual configuration (if interactive prompting is not supported by the agent):**
-     - The agent creates a `cosmic-ray.toml` file manually.
-     - The content of the configuration file corresponds to the selected execution variant:
-       - **Use Case 02.a – Run Basic Test Local**
-       - **Use Case 02.b – Run Basic Test Http**
+   - The agent determines the desired configuration strategy based on user preference or instructions:
+      1.  **Distributor Variant:** Local OR HTTP.
+      2.  **Creation Method:** Simulated Interactive OR Manual.
+    
+    - **Action:** The agent executes the specific instructions defined in **ONE** of the following use cases to generate `cosmic-ray.toml`:
+      - **[Use Case 02.a - Run Basic Mutation Test (Local)](./02.a-local.md)**
+      - **[Use Case 02.b - Run Basic Mutation Test (HTTP)](./02.b-http.md)**
 4.  **Commit Setup Changes:**
     - Agent stages all modified files, which include the dependency updates and the new Cosmic Ray configuration.
       ```bash
