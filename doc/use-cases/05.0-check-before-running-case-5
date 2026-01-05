@@ -1,0 +1,85 @@
+# Use Case: 05.0 - Prepare Mutation Testing Environment
+
+## Description
+This use case prepares the project for mutation testing and ensures all preconditions are met.  
+It checks for existing mutation test results, verifies the project test suite, and initializes mutant tracking.  
+The system supports **Default**, **Advanced**, and **Custom** flows.
+
+## Actor
+RooCode Agent  
+User (for confirmations and custom inputs)
+
+## Preconditions
+- Project source code and test suite exist.  
+- Cosmic Ray or another mutation testing tool is installed.  
+- (Optional) A mutant tracking file may exist.  
+
+## Flow
+
+1. **Locate Mutation Results File**
+   - Agent searches the project directory for typical mutation results files (e.g., `cosmic-ray-results.json`).  
+   - If a file is found:
+     - Agent asks the user: `"Is this your mutation results file? [Yes/No]"`  
+       - **Yes** → proceed.  
+       - **No** → ask user to provide the correct file path.
+   - If no file is found:
+     - Agent asks the user:
+       > “No mutation results were found. Would you like to:
+       >
+       > 1) Run **Use Case 02 – Run Basic Tests** (to ensure tests pass)?
+       > 2) Run mutation tests in a **custom way**?
+       > 3) Skip and abort preparation?”
+     - If the user selects **Run Use Case 02**:
+       - Agent triggers the flow defined in `02-run-basic-test.md`.
+       - After tests pass, return to step 1.
+     - If the user selects **Run mutation tests in a custom way**:
+       - Agent asks for custom command or configuration and executes it.
+       - After completion, return to step 1.
+     - If the user selects **Skip and abort**:
+       - Agent aborts with: `"Cannot proceed without mutation results."`
+
+2. **Verify Project Test Suite**
+   - Agent runs the current test suite.
+   - If any test fails:
+     - Agent warns user and aborts the workflow.
+   - If all tests pass:
+     - Confirm readiness.
+
+3. **Initialize Mutant Tracking File**
+   - Agent creates or loads `mutants_status.txt` with entries like:
+     ```
+     mutant_id | status | timestamp | test_file
+     ```
+   - Statuses may include `pending`, `fixed`, or `verified`.
+
+4. **Confirm Readiness**
+   - Agent outputs a summary:
+     - Mutation results file location  
+     - Number of surviving mutants (if available)  
+     - Test suite status  
+   - System is ready to proceed to **05.1 – Analyze Surviving Mutants**.
+
+### Advanced Flow (Optional)
+- Agent may provide additional checks and features:
+  - Validate mutation results file contents.  
+  - Detect inconsistencies or missing mutants in results.  
+  - Offer to run mutation testing with custom parameters (mutators, target files).  
+  - Automatically record baseline mutation score.  
+  - Prepare logging and reporting directories.
+
+### Custom Flow
+- Agent executes user-provided workflow for preparation.  
+- User may define:
+  - Custom mutation results location  
+  - Alternative test suite verification commands  
+  - Custom mutant tracking format or file  
+
+## Postconditions
+- Mutation results file is located or generated.  
+- Project test suite passes in its current state.  
+- Mutant tracking file is initialized and ready for 05.1.  
+- Optional advanced logs and reports are created.  
+
+## Source
+Derived from user story:
+- `doc/user-stories/05-test-fixes.md`: #5.0
