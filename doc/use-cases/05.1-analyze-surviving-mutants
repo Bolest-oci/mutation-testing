@@ -1,4 +1,4 @@
-# Use Case: 05 - Analyze Surviving Mutants
+# Use Case: 05.1 - Analyze Surviving Mutants
 
 ## Description
 This use case describes how the system analyzes surviving mutants from a mutation test run
@@ -13,23 +13,39 @@ RooCode Agent
 - The project test suite passes in its current state.
 
 ## Flow
-1. **Load Mutation Results**
+
+1. **Select Analysis Flow**
+   - Agent asks the user whether to use the default analysis flow or provide a custom flow.
+   - If a custom flow is provided, the agent loads and validates it.
+   - If the default flow is selected, the agent proceeds with steps 2–5.
+
+### Default Flow
+
+2. **Load Mutation Results**
    - Agent parses mutation testing output.
    - Surviving mutants are identified and grouped by file, line, and mutator.
 
-2. **Map Mutants to Code Paths**
+3. **Map Mutants to Code Paths**
    - Agent identifies the mutated code behavior.
    - Agent determines what logical condition or branch was altered.
 
-3. **Detect Test Coverage Gaps**
+4. **Detect Test Coverage Gaps**
    - Agent analyzes existing tests that exercise the mutated code.
    - Agent identifies missing assertions, missing input scenarios, or overly permissive tests.
 
-4. **Summarize Findings**
+5. **Summarize Findings**
    - Agent produces a structured summary of:
      - Surviving mutant
      - Probable reason it survived
      - Affected test files (if any)
+
+### Custom Flow
+
+2a. **Execute Custom Analysis Flow**
+   - Agent executes the user-provided analysis flow.
+   - The custom flow may redefine analysis steps and output structure.
+   - If the custom flow does not define a summary step, the agent executes **Summarize Findings** (step 5).
+
 
 ## Postconditions
 - A clear list of test weaknesses is produced.
