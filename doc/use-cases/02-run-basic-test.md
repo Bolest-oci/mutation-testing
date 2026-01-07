@@ -27,11 +27,11 @@ RooCode Agent
 3. **Create a Minimal Cosmic Ray Configuration:**
    - The agent determines the desired configuration strategy based on user preference or instructions:
       1.  **Distributor Variant:** Local OR HTTP.
-      2.  **Creation Method:** Simulated Interactive OR Manual.
+      2.  **Creation Method:**  Interactive OR Manual.
     
     - **Action:** The agent executes the specific instructions defined in **ONE** of the following use cases to generate `cosmic-ray.toml`:
-      - **[Use Case 02.a - Run Basic Mutation Test (Local)](./02.a-local.md)**
-      - **[Use Case 02.b - Run Basic Mutation Test (HTTP)](./02.b-http.md)**
+      - **Use Case 02.a - Run Basic Test (Local)**
+      - **Use Case 02.b - Run Basic Test (HTTP)**
 4.  **Commit Setup Changes:**
     - Agent stages all modified files, which include the dependency updates and the new Cosmic Ray configuration.
       ```bash
