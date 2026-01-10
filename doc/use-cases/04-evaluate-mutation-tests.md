@@ -13,10 +13,13 @@ RooCode Agent
 
 ## Flow
 1. **Clean and Verify Codebase:**
-    - Agent follows the steps outlined in **Use Case 04.1 - Pre-evaluation Cleanup** to clean and verify the codebase.
+    - Agent follows the steps outlined in **Use Case 04.1 - Pre-evaluation Cleanup** to clean and verify the codebase. This includes running linting, static analysis, and code coverage.
 
 2. **Generate and Interpret Reports:**
-    - Agent follows the steps outlined in **Use Case 04.2 - Generate and Interpret Report** to generate structured mutation testing reports and interpret their outcomes.
+    - Agent follows the steps outlined in **Use Case 04.2 - Generate and Interpret Report** to generate structured mutation testing reports and interpret their outcomes. This includes generating an HTML report, and creating markdown files for survived and killed mutants.
+
+3. **Analyze and Classify Mutants:**
+    - Agent analyzes the survived and killed mutants, providing reasoning and suggesting fixes for each.
 
 ## Postconditions
 - The codebase is cleaned and verified for evaluation.
