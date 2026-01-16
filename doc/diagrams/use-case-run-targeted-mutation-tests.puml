@@ -1,0 +1,77 @@
+@startuml
+top to bottom direction
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing true
+
+skinparam rectangle {
+  BackgroundColor #FDFDFD
+  BorderColor #B0B0B0
+  RoundCorner 12
+}
+
+skinparam actor {
+  Style awesome
+  FontColor #333333
+}
+
+skinparam usecase {
+  BackgroundColor #F8F8F8
+  BorderColor #666666
+  ArrowColor #444444
+  FontColor #222222
+  BorderThickness 1.2
+  RoundCorner 20
+}
+
+skinparam arrow {
+  Color #444444
+  Thickness 1.3
+}
+
+skinparam stereotype {
+  FontColor #444444
+  FontSize 10
+}
+
+title
+<b>Targeted Mutation Testing – Use Case Model</b>
+end title
+
+actor "RooCode Agent" as Agent
+
+rectangle "Targeted Mutation Testing" as SystemBoundary {
+
+  usecase "Run Targeted Mutation\nTest Runs" as UC_Main
+
+  ' === Povinné pod-use-cases ===
+  usecase "Apply Line-Based\nMutation Filtering" as UC_FilterLines
+  usecase "Select Relevant Tests" as UC_SelectTests
+  usecase "Execute Targeted\nMutations" as UC_Execute
+
+  ' === Voliteľné pod-use-cases ===
+  usecase "Apply Quality Gates" as UC_Quality
+  usecase "Optimize Mutation\nOperators Scope" as UC_Operators
+  usecase "Exclude Mutation Jobs\nvia Database Filtering" as UC_Exclude
+}
+
+Agent --> UC_Main
+
+
+' === Povinné include väzby ===
+UC_Main --> UC_FilterLines : <<include>>
+UC_Main --> UC_SelectTests : <<include>>
+UC_Main --> UC_Execute : <<include>>
+
+
+' === Voliteľné extend väzby ===
+UC_Main <.. UC_Quality   : <<extend>>\n
+UC_Main <.. UC_Operators : <<extend>>\n
+
+' === Conditional extend ===
+UC_Quality <.. UC_Exclude : <<extend>>\n[quality gate failures detected]
+
+@enduml
+
+---
+*Generated/modified by ChatGPT 5.2*

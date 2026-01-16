@@ -19,7 +19,7 @@ RooCode Agent
 
 2. **Apply Quality Gates**
    - Agent applies basic quality checks only to the previously identified candidate files and line ranges.
-   - Agent follows **Use Case 03.2 – Apply Quality Gates**, which evaluates linting, static checks, and available coverage information.
+   - Agent follows **Use Case 03.2 – Apply Quality Gates**, which evaluates linting and available coverage information.
    - Any mutation jobs intersecting files or line ranges that fail applicable quality gates are marked as skipped in the mutation database.
    - The resulting refined set of candidate files and line ranges is passed to subsequent steps.
 

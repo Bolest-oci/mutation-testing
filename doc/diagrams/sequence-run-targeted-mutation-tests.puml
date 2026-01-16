@@ -1,0 +1,69 @@
+@startuml
+autonumber
+title Targeted Mutation Testing – Sequence Diagram
+
+skinparam sequence {
+  ArrowColor #444
+  LifeLineBorderColor #666
+  LifeLineBackgroundColor #FAFAFA
+  ParticipantBackgroundColor #F7F7F7
+  ParticipantBorderColor #555
+  ParticipantFontColor #222
+  ArrowThickness 1.3
+}
+
+actor "RooCode Agent" as Agent
+
+participant "Line-Based Mutation\nFiltering" as FilterLines
+participant "Quality Gates" as Quality
+participant "Database Filtering\n(Exclude Jobs)" as Exclude
+participant "Operator Scope\nOptimization" as Operators
+participant "Test Selection" as Selector
+participant "Mutation Execution" as Executor
+
+' === Step 1: Mandatory ===
+Agent -> FilterLines : Apply line-based filtering
+activate FilterLines
+FilterLines --> Agent : Filtered line ranges
+deactivate FilterLines
+
+' === Step 2: Optional – Quality Gates ===
+opt Quality gates enabled
+  Agent -> Quality : Apply quality gates
+  activate Quality
+  Quality --> Agent : Quality evaluation
+  deactivate Quality
+
+  ' --- Optional inside optional ---
+  opt Quality gate failures detected
+    Agent -> Exclude : Exclude failed mutation jobs
+    activate Exclude
+    Exclude --> Agent : Updated mutation DB
+    deactivate Exclude
+  end
+end
+
+' === Step 3: Optional – Operator optimization ===
+opt Operator scope optimization enabled
+  Agent -> Operators : Optimize operator scope
+  activate Operators
+  Operators --> Agent : Enabled/disabled operators
+  deactivate Operators
+end
+
+' === Step 4: Mandatory ===
+Agent -> Selector : Select relevant tests
+activate Selector
+Selector --> Agent : Test file list
+deactivate Selector
+
+' === Step 5: Mandatory ===
+Agent -> Executor : Execute targeted mutations
+activate Executor
+Executor --> Agent : Mutation testing results
+deactivate Executor
+
+@enduml
+
+---
+*Generated/modified by ChatGPT 5.2*
