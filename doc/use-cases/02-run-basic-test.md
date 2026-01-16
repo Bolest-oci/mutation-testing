@@ -4,7 +4,8 @@
 This use case describes how to run a basic mutation test using Cosmic Ray on a project that has been set up according to "Use Case 01 - Project Setup".
 
 ## Actor
-RooCode Agent
+- RooCode Agent
+- User (Provides configuration inputs)
 
 ## Preconditions
 - The project has been set up as a submodule in `repos/<project_name>`.

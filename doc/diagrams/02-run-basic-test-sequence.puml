@@ -1,0 +1,74 @@
+@startuml
+skinparam sequenceMessageAlign center
+skinparam monochrome true
+skinparam shadowing false
+
+actor "RooCode Agent" as Agent
+actor "User" as User
+participant "System (Project & Cosmic Ray)" as System
+
+title Sequence Diagram: Run Basic Mutation Test
+
+autonumber
+
+Agent -> System: Navigate to submodule (repos/<project_name>)
+Agent -> System: Install Cosmic Ray (ref. UC 02.1)
+Agent -> System: Run project test suite (e.g., pytest)
+System --> Agent: Test results (Pass/Fail)
+
+break Tests Fail
+    System --> Agent: Report Failure
+    Agent --> User: Notify: Mutation testing stopped due to failing tests
+end
+
+note over Agent, System: Process continues only if tests PASS
+
+Agent -> User: Request configuration preferences (Distributor: Local/HTTP, Method: Interactive/Manual)
+User -> Agent: Select Distributor (Local/HTTP) and Method (Interactive/Manual)
+
+alt Local Distributor (UC 02.a) selected
+    alt Interactive Configuration selected
+        Agent -> System: Execute 'cosmic-ray new-config cosmic-ray.toml'
+        activate System
+        note right of User: User interacts directly with the terminal wizard
+        System -> User: Prompt for module path, timeout, test command...
+        User -> System: Type configuration values
+        System --> Agent: Process finishes (cosmic-ray.toml created)
+        deactivate System
+    else Manual Configuration selected
+        Agent -> System: Create cosmic-ray.toml (write file directly)
+    end
+    Agent -> System: Finalize local configuration
+else HTTP Distributor (UC 02.b) selected
+    alt Interactive Configuration selected
+        Agent -> System: Execute 'cosmic-ray new-config cosmic-ray.toml'
+        activate System
+        note right of User: User interacts directly with the terminal wizard
+        System -> User: Prompt for module path, timeout, test command...
+        User -> System: Type configuration values
+        System --> Agent: Process finishes (cosmic-ray.toml created)
+        deactivate System
+    else Manual Configuration selected
+        Agent -> System: Create cosmic-ray.toml (write file directly)
+    end
+    Agent -> System: Update cosmic-ray.toml with HTTP worker URLs
+    User -> System: Start HTTP worker processes (external action in new terminal)
+    System --> System: HTTP workers running
+end
+
+Agent -> System: git add .
+Agent -> System: git commit -m "build: Add Cosmic Ray configuration"
+Agent -> System: cosmic-ray init --force cosmic-ray.toml session.sqlite
+Agent -> System: cosmic-ray exec cosmic-ray.toml session.sqlite
+activate System
+System --> Agent: Mutation test execution results
+deactivate System
+
+Agent -> System: cr-report session.sqlite
+System --> Agent: Mutation test report
+Agent -> User: Present mutation test results
+Agent -> System: Deactivate virtual environment
+Agent -> System: cd ../.. (Return to workspace root)
+
+@enduml
+'Generated/modified by AI RooCode 3.36.2, used model google/gemini-2.5-flash
