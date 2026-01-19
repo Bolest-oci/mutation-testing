@@ -12,7 +12,7 @@ title Sequence Diagram: Run Basic Mutation Test
 autonumber
 
 Agent -> System: Navigate to submodule (repos/<project_name>)
-Agent -> System: Install Cosmic Ray (ref. UC 02.1)
+Agent -> System: // Precondition: Cosmic Ray installed (ref. UC 01.1)
 Agent -> System: Run project test suite (e.g., pytest)
 System --> Agent: Test results (Pass/Fail)
 
@@ -26,7 +26,7 @@ note over Agent, System: Process continues only if tests PASS
 Agent -> User: Request configuration preferences (Distributor: Local/HTTP, Method: Interactive/Manual)
 User -> Agent: Select Distributor (Local/HTTP) and Method (Interactive/Manual)
 
-alt Local Distributor (UC 02.a) selected
+alt Local Distributor (UC 01.2.1) selected
     alt Interactive Configuration selected
         Agent -> System: Execute 'cosmic-ray new-config cosmic-ray.toml'
         activate System
@@ -39,7 +39,7 @@ alt Local Distributor (UC 02.a) selected
         Agent -> System: Create cosmic-ray.toml (write file directly)
     end
     Agent -> System: Finalize local configuration
-else HTTP Distributor (UC 02.b) selected
+else HTTP Distributor (UC 01.2.2) selected
     alt Interactive Configuration selected
         Agent -> System: Execute 'cosmic-ray new-config cosmic-ray.toml'
         activate System
