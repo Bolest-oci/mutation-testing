@@ -29,3 +29,7 @@ __pycache__
 
 # IntelliJ / IDE config
 .idea/
+
+out/
+dist/
+*.vsix
