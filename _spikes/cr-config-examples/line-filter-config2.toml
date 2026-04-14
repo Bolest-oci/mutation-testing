@@ -1,0 +1,13 @@
+[cosmic-ray]
+module-path = "src"
+timeout = 5.0
+excluded-modules = []
+test-command = "pytest"
+
+
+[cosmic-ray.filters.line-filter]
+lines = { "my_math.py" = "2", "my_utils.py" = "3-4"}
+
+
+[cosmic-ray.distributor]
+name = "local"
