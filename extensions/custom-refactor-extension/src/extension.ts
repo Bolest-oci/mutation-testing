@@ -1,205 +1,231 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+/**
+ * Custom VSCode Refactor Extension
+ *
+ * This extension exposes a catalog of refactorings defined in refactorCatalog.ts
+ * and surfaces them in the VS Code "Refactor..." context menu when text is selected.
+ * 
+ * --- HOW IT WORKS ---
+ *
+ * 1. User selects code or places cursor
+ * 2. VS Code calls CustomRefactorProvider
+ * 3. Provider:
+ *    - detects language
+ *    - optionally detects code smell from comments
+ *    - filters applicable refactors
+ * 4. Matching refactors are shown in the UI
+ * 5. When user selects one:
+ *    → command "custom-refactor-extension.executeRefactor" is executed
+ * 6. Command calls runRefactor(id, context)
+ * 7. Refactor implementation is executed
+ * 
+ * --- HOW TO ADD A NEW REFACTOR ---
+ * 
+ * 1. Register the refactor metadata in `src/refactorCatalog.ts`.
+ *    Add a new entry to the `REFACTOR_LIST` array with a unique `id`.
+ * 
+ * 2. Create the implementation in `src/refactors/`.
+ *    In your implementation file, use `registerRefactor(id, callback)` from `src/refactorEngine.ts`
+ *    to map your logic to the `id` you defined in the catalog.
+ * 
+ * 3. Import your implementation file below.
+ *    This ensures that `registerRefactor` is called when the extension activates.
+ * 
+ * 4. (Optional) Update the supported languages.
+ *    If your refactor introduces a new language, add it to the list in `registerCodeActionsProvider`
+ *    within the `activate` function.
+
+ */
 import * as vscode from 'vscode';
+import { REFACTOR_LIST, CODE_SMELL_MAPPING } from './refactorCatalog';
+import { runRefactor } from './refactorEngine';
+// Import refactor implementations here to trigger their registration
+import "./refactors/extractVariable";
+import "./refactors/extractVariable/lsp";
+import "./refactors/inlineVariable";
+import "./refactors/renameSymbol";
+import "./refactors/extractFunction/index";
+import "./refactors/extractConstant";
+import "./refactors/llmRefactor";
+import "./refactors/consolidateConditional";
+// Generated (LLM-based) refactors
+import "./refactors/extractConstant/index.generated";
+import "./refactors/convertIfToCase/index.generated";
+// LLM generator commands
+import { registerLLMCommand } from "./refactors/consolidateConditional/prompt";
+import { registerLLMCommand as registerExtractConstantLLM } from "./refactors/extractConstant/indexLlm";
+import { registerLLMCommand as registerConvertIfToCase } from "./refactors/convertIfToCase/indexLlm";
 
 
-const REFACTOR_CATALOG = [
-	{
-		id: "extractFunction",
-		title: "Extract Function",
-		kind: vscode.CodeActionKind.RefactorExtract,
-		languages: ["javascript", "typescript", "python"]
-	},
-	{
-		id: "inlineVariable",
-		title: "Inline Variable",
-		kind: vscode.CodeActionKind.RefactorInline,
-		languages: ["javascript", "typescript", "python"]
-	},
-	{
-		id: "renameVariable",
-		title: "Rename Variable",
-		kind: vscode.CodeActionKind.RefactorRewrite,
-		languages: ["javascript", "typescript", "python", "shellscript"]
-	},
-	{
-		id: "moveFunction",
-		title: "Move Function",
-		kind: vscode.CodeActionKind.RefactorMove,
-		languages: ["javascript", "typescript"]
-	},
-	{
-		id: "extractVariable",
-		title: "Extract Variable",
-		kind: vscode.CodeActionKind.RefactorExtract,
-		languages: ["javascript", "typescript", "python"]
-	},
-	{
-		id: "removeDeadCode",
-		title: "Remove Dead Code",
-		kind: vscode.CodeActionKind.RefactorRewrite,
-		languages: ["javascript", "typescript", "python", "shellscript"]
-	},
-	{
-		id: "replaceMagicNumber",
-		title: "Replace Magic Number",
-		kind: vscode.CodeActionKind.RefactorRewrite,
-		languages: ["javascript", "typescript", "python"]
-	},
-	{
-		id: "introduceParameterObject",
-		title: "Introduce Parameter Object",
-		kind: vscode.CodeActionKind.RefactorRewrite,
-		languages: ["javascript", "typescript"]
-	},
-	{
-		id: "encapsulateVariable",
-		title: "Encapsulate Variable",
-		kind: vscode.CodeActionKind.RefactorRewrite,
-		languages: ["javascript", "typescript"]
-	},
-	{
-		id: "replaceConditionalWithPolymorphism",
-		title: "Replace Conditional with Polymorphism",
-		kind: vscode.CodeActionKind.RefactorRewrite,
-		languages: ["javascript", "typescript"]
-	},
-
-	{
-		id: "extractScript",
-		title: "Extract Script Section",
-		kind: vscode.CodeActionKind.RefactorExtract,
-		languages: ["shellscript"]
-	},
-	{
-		id: "inlineEnvVar",
-		title: "Inline Environment Variable",
-		kind: vscode.CodeActionKind.RefactorInline,
-		languages: ["shellscript"]
-	}
-];
-
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+// This method is called when your extension is activated.
+// VS Code activates the extension either on startup or when one of its activation events (defined in package.json) occurs.
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
+	// Diagnostic output to the VS Code debug console
 	console.log('Congratulations, your extension "custom-refactor-extension" is now active!');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
+	// Store the absolute path to this extension globally.
+	// This is useful for modules that need to locate assets or run external scripts (like Python refactoring tools).
+	(global as any).extensionPath = context.extensionPath;
 
+	console.log("Extension path:", context.extensionPath);
+
+	// The provider responsible for analyzing the current document and offering refactorings.
 	const provider = new CustomRefactorProvider();
 
+	// Register the Code Actions provider. 
+	// This makes our refactorings appear in the lightbulb menu and the "Refactor..." context menu.
 	context.subscriptions.push(
 		vscode.languages.registerCodeActionsProvider(
-			["javascript", "typescript", "python", "shellscript"],
+			["javascript", "typescript", "python", "shellscript"], // List of languages where this extension is active
 			provider,
 			{
+				// Tell VS Code that this provider specifically handles refactoring actions.
 				providedCodeActionKinds: [vscode.CodeActionKind.Refactor]
 			}
 		)
 	);
+
+	// Register specialized commands for LLM-powered refactorings.
+	// These usually involve complex logic or interaction with external AI services.
+	registerLLMCommand(context);
+	registerExtractConstantLLM(context);
+    registerConvertIfToCase(context);
+
+	// Register the central command that executes the chosen refactoring.
+	// When a user clicks a refactor in the UI, this command is triggered with the refactor's ID.
 	const executeCommand = vscode.commands.registerCommand(
 		"custom-refactor-extension.executeRefactor",
 		(refactorId: string) => {
-			switch (refactorId) {
-				case "extractFunction":
-					vscode.window.showInformationMessage("Executing: Extract Function (Placeholder)");
-					// Actual implementation for Extract Function would go here
-					break;
-				case "inlineVariable":
-					vscode.window.showInformationMessage("Executing: Inline Variable (Placeholder)");
-					// Actual implementation for Inline Variable would go here
-					break;
-				case "renameVariable":
-					vscode.window.showInformationMessage("Executing: Rename Variable (Placeholder)");
-					// Actual implementation for Rename Variable would go here
-					break;
-				case "moveFunction":
-					vscode.window.showInformationMessage("Executing: Move Function (Placeholder)");
-					// Actual implementation for Move Function would go here
-					break;
-				case "extractVariable":
-					vscode.window.showInformationMessage("Executing: Extract Variable (Placeholder)");
-					// Actual implementation for Extract Variable would go here
-					break;
-				case "removeDeadCode":
-					vscode.window.showInformationMessage("Executing: Remove Dead Code (Placeholder)");
-					// Actual implementation for Remove Dead Code would go here
-					break;
-				case "replaceMagicNumber":
-					vscode.window.showInformationMessage("Executing: Replace Magic Number (Placeholder)");
-					// Actual implementation for Replace Magic Number would go here
-					break;
-				case "introduceParameterObject":
-					vscode.window.showInformationMessage("Executing: Introduce Parameter Object (Placeholder)");
-					// Actual implementation for Introduce Parameter Object would go here
-					break;
-				case "encapsulateVariable":
-					vscode.window.showInformationMessage("Executing: Encapsulate Variable (Placeholder)");
-					// Actual implementation for Encapsulate Variable would go here
-					break;
-				case "replaceConditionalWithPolymorphism":
-					vscode.window.showInformationMessage("Executing: Replace Conditional with Polymorphism (Placeholder)");
-					// Actual implementation for Replace Conditional with Polymorphism would go here
-					break;
-				case "extractScript":
-					vscode.window.showInformationMessage("Executing: Extract Script Section (Placeholder)");
-					// Actual implementation for Extract Script Section would go here
-					break;
-				case "inlineEnvVar":
-					vscode.window.showInformationMessage("Executing: Inline Environment Variable (Placeholder)");
-					// Actual implementation for Inline Environment Variable would go here
-					break;
-				default:
-					vscode.window.showInformationMessage(`Unknown refactoring: ${refactorId}`);
-					break;
+
+			const editor = vscode.window.activeTextEditor;
+
+			if (!editor) {
+				// No active editor means nowhere to apply a refactor.
+				return;
 			}
+
+			// Capture the current editor state to pass as context to the refactor engine.
+			// This ensures the refactor implementation has all the data it needs.
+			const context = {
+				document: editor.document,
+				selection: editor.selection,
+				language: editor.document.languageId,
+				code: editor.document.getText()
+			};
+
+			console.log("Executing refactor:", refactorId);
+			console.log("Language:", context.language);
+
+			// Dispatch the execution to the refactor engine which handles the actual code transformation.
+			runRefactor(refactorId, context);
 		}
 	);
 
+	// Ensure the command is cleaned up when the extension is deactivated.
 	context.subscriptions.push(executeCommand);
 }
 
-// This method is called when your extension is deactivated
+// Clean up resources when the extension is disabled or VS Code closes.
 export function deactivate() { }
 
 
+/**
+ * The CodeActionProvider is responsible for suggesting refactorings in the UI.
+ * It is called by VS Code whenever the user selects code, moves the cursor, or requests refactorings.
+ */
 class CustomRefactorProvider implements vscode.CodeActionProvider {
 
+	/**
+	 * Analyzes the current selection and returns a list of applicable refactorings.
+	 * 
+	 * Logic flow:
+	 * 1. Verify if refactoring is allowed in the current context.
+	 * 2. Identify the language of the file.
+	 * 3. Search for "code smell" comments (e.g., // Long Method) that might trigger specific refactors.
+	 * 4. Filter the global refactor catalog based on language and detected smells.
+	 * 5. Convert matching refactors into VS Code CodeAction objects.
+	 */
 	provideCodeActions(
-		document: vscode.TextDocument,
-		range: vscode.Range | vscode.Selection,
-		context: vscode.CodeActionContext
-	): vscode.CodeAction[] {
+    document: vscode.TextDocument,
+    range: vscode.Range | vscode.Selection,
+    context: vscode.CodeActionContext
+): vscode.CodeAction[] {
 
-		if (range.isEmpty) {
-			return [];
-		}
+    // 1. Filter: Only show our refactors if specifically requested via 'Refactor...' menu 
+    // or if no specific kind is requested (e.g., clicking the lightbulb menu).
+    if (context.only && !context.only.contains(vscode.CodeActionKind.Refactor)) {
+        return [];
+    }
 
-		console.log("Custom provider called");
-		console.log("Language:", document.languageId);
+    const language = document.languageId;
+    
+    // --- CODE SMELL DETECTION ---
+    // We look for comments that indicate a specific issue (e.g., "// Long Method").
+    // If such a comment is found, we prioritize refactors that fix that specific smell.
+    let detectedCodeSmell: string | undefined;
+    const linesToSearch: string[] = [];
 
-		const currentLanguage = document.languageId;
+    // Check the line immediately above the selection.
+    if (range.start.line > 0) {
+        linesToSearch.push(document.lineAt(range.start.line - 1).text);
+    }
 
-		return REFACTOR_CATALOG
-			.filter(r => r.languages.includes(currentLanguage))
-			.map(r => {
-				const action = new vscode.CodeAction(
-					`Custom: ${r.title}`,
-					r.kind
-				);
+    // Check all lines within the selection.
+    for (let i = range.start.line; i <= range.end.line; i++) {
+        linesToSearch.push(document.lineAt(i).text);
+    }
 
-				action.command = {
-					command: "custom-refactor-extension.executeRefactor",
-					title: r.title,
-					arguments: [r.id]
-				};
+    // Iterate through lines to find a match with any known code smell defined in the catalog.
+    for (const text of linesToSearch) {
+        for (const smell of Object.keys(CODE_SMELL_MAPPING)) {
+            // Regex to match comments in various languages: // Smell, # Smell, /* Smell */
+            const regex = new RegExp(`(//|#|/\\*).*${smell}`, 'i');
+            if (regex.test(text)) {
+                detectedCodeSmell = smell;
+                break;
+            }
+        }
+        if (detectedCodeSmell) {
+            break;
+        }
+    }
 
-				return action;
-			});
-	}
+    // --- REFACTOR FILTERING ---
+    // Start with all refactors that support the current file's language.
+    let availableRefactors = REFACTOR_LIST.filter(r =>
+        r.supportedLanguages.includes(language as any)
+    );
+
+    if (detectedCodeSmell) {
+        // If a code smell was detected, only show refactors mapped to that specific smell.
+        const suitableIds = CODE_SMELL_MAPPING[detectedCodeSmell];
+        availableRefactors = availableRefactors.filter(r => suitableIds.includes(r.id));
+    } else {
+        // If NO code smell is present, we only show refactors when the user has selected some text.
+        // This prevents the menu from being cluttered with refactor suggestions when just clicking around.
+        if (range.isEmpty) {
+            return [];
+        }
+    }
+
+    // --- MAPPING TO VS CODE UI ---
+    // Transform our internal refactor definitions into objects that VS Code can display.
+    return availableRefactors.map(refactor => {
+
+        // Create a display label (e.g., "MBT (typescript): Extract Variable")
+        const action = new vscode.CodeAction(
+            `MBT (${language}${detectedCodeSmell ? ': ' + detectedCodeSmell : ''}): ${refactor.name}`,
+            refactor.kind
+        );
+
+        // Link the menu item to our execution command and pass the unique refactor ID.
+        action.command = {
+            command: "custom-refactor-extension.executeRefactor",
+            title: refactor.name,
+            arguments: [refactor.id]
+        };
+
+        return action;
+    });
+}
 }
