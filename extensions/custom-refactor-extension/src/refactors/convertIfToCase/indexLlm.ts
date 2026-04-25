@@ -1,0 +1,29 @@
+import * as vscode from "vscode";
+import { registerGeneratorCommand } from "../llmGeneratorBase";
+
+/**
+ * Registers the LLM generation command for the "Convert if to case" refactor.
+ */
+export function registerLLMCommand(context: vscode.ExtensionContext) {
+    registerGeneratorCommand(
+        context,
+        "llm.generateConvertIfToCase",
+        {
+            refactorId: "convertIfToCase",
+            refactorName: "Convert if to case",
+            goal: "Transform an if-elif chain comparing the same variable into a case statement in shell scripts.",
+            expectedBehavior: [
+                "Detect an if/elif/else chain comparing the same variable",
+                "Transform it into a case statement using that variable",
+                "Map each condition to a corresponding case branch",
+                "Preserve all commands from each branch without changing behavior",
+                "Convert else branch to default (*) if present",
+                "Use valid shell syntax: case ... in ... esac",
+                "Keep the implementation simple and readable",
+                "Avoid complex regular expressions; prefer line-based processing",
+                "Do not introduce new logic or remove existing logic"
+            ],
+            outputFile: "convertIfToCase/index.generated.ts"
+        }
+    );
+}
