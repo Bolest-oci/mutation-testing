@@ -3,11 +3,11 @@
 		"cosmic-ray-spike": {
 			"command": "python",
 			"args": [
-				"mcp_server.py"
+				"_spikes/line-mutation-mcp/mcp_server.py"
 			],
 			"disabled": false,
 			"alwaysAllow": [],
-			"timeout": 600
+			"timeout": 300
 		}
 	}
 }
