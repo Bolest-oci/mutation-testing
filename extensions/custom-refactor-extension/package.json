@@ -17,20 +17,20 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
-     "commands": [
-    {
-      "command": "llm.generateConsolidateConditional",
-      "title": "LLM: Generate Consolidate Conditional"
-    },{
-      "command": "llm.generateExtractConstantString",
-      "title": "LLM: Generate Extract Constant (String)"
-    },
-    {
-  "command": "llm.generateConvertIfToCase",
-  "title": "LLM: Generate Convert if to case Refactor"
-}
-    
-  ]
+    "commands": [
+      {
+        "command": "llm.generateConsolidateConditional",
+        "title": "LLM: Generate Consolidate Conditional"
+      },
+      {
+        "command": "llm.generateExtractConstantString",
+        "title": "LLM: Generate Extract Constant (String)"
+      },
+      {
+        "command": "llm.generateConvertIfToCase",
+        "title": "LLM: Generate Convert if to case Refactor"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -41,6 +41,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/jscodeshift": "^17.3.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.19.17",
@@ -53,6 +54,7 @@
     "typescript-eslint": "^8.56.1"
   },
   "dependencies": {
+    "js-yaml": "^4.1.1",
     "jscodeshift": "^17.3.0",
     "recast": "^0.23.8",
     "tree-sitter": "^0.25.0",

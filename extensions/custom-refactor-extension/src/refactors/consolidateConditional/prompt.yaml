@@ -1,0 +1,3 @@
+refactorId: consolidateConditional
+refactorName: Consolidate Conditional Expression
+outputFile: consolidateConditional/index.ts

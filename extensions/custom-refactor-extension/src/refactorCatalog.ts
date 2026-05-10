@@ -151,7 +151,7 @@ export const REFACTOR_LIST: RefactorDefinition[] = [
   tags: ["refactor"]
 },
 {
-  id: "extractConstantStringShellLlm",
+  id: "extractConstantStringShell",
   name: "Extract Constant (String) [LLM]",
   supportedLanguages: ["shellscript"],
   kind: vscode.CodeActionKind.RefactorExtract.append("constant"),
@@ -371,7 +371,7 @@ export const REFACTOR_MAP = Object.fromEntries(
  * Mapping from code smell comments to suitable refactor IDs.
  */
 export const CODE_SMELL_MAPPING: Record<string, string[]> = {
-  "duplicatedcode": ["extractFunction"],
+  "duplicatedcode": ["extractFunction", "consolidateConditional"],
 
   "longmethod": ["extractFunction"],
 
@@ -381,5 +381,5 @@ export const CODE_SMELL_MAPPING: Record<string, string[]> = {
     "extractConstantStringShellLlm"
   ],
 
-  "switchstatements": ["consolidateConditional", "convertIfToCase"]
+  "switchstatements": ["convertIfToCase"]
 };
