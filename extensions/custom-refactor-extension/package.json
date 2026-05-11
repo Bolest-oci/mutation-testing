@@ -19,16 +19,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "llm.generateConsolidateConditional",
-        "title": "LLM: Generate Consolidate Conditional"
+        "command": "extension.llmRuntimeRefactor",
+        "title": "LLM Runtime Refactor"
       },
       {
-        "command": "llm.generateExtractConstantString",
-        "title": "LLM: Generate Extract Constant (String)"
-      },
-      {
-        "command": "llm.generateConvertIfToCase",
-        "title": "LLM: Generate Convert if to case Refactor"
+        "command": "extension.llmRefactorGenerator",
+        "title": "LLM Refactor Generator"
       }
     ]
   },
