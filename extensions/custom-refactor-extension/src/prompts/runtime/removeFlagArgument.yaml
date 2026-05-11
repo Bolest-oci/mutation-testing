@@ -1,0 +1,17 @@
+refactorId: removeFlagArgument
+
+refactorName: Remove Flag Argument
+
+description: >
+  Removes boolean control parameters that change function behavior.
+  Replace the flag-based logic with clearer separate functions or branches.
+
+rules:
+  - Remove boolean flag arguments that control multiple behaviors
+  - Split behavior into clearly named functions when appropriate
+  - Preserve original program behavior
+  - Keep refactor inside the selected code only
+  - Do not modify unrelated code
+  - Prefer readability over compactness
+  - Avoid introducing unnecessary abstractions
+  - Return only valid code

@@ -51,9 +51,9 @@ import "./refactors/consolidateConditional";
 import "./refactors/extractConstant/index.generated";
 import "./refactors/convertIfToCase/index.generated";
 // LLM generator commands
-import { registerLLMCommand } from "./refactors/consolidateConditional/prompt";
-import { registerLLMCommand as registerExtractConstantLLM } from "./refactors/extractConstant/indexLlm";
-import { registerLLMCommand as registerConvertIfToCase } from "./refactors/convertIfToCase/indexLlm";
+import { registerAIRefactorRunner } from "./llmRefactorRunner";
+import { registerLLMRefactorGenerator } from "./llmRefactorGenerator";
+
 
 
 // This method is called when your extension is activated.
@@ -87,9 +87,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Register specialized commands for LLM-powered refactorings.
 	// These usually involve complex logic or interaction with external AI services.
-	registerLLMCommand(context);
-	registerExtractConstantLLM(context);
-    registerConvertIfToCase(context);
+    registerAIRefactorRunner(context);
+    registerLLMRefactorGenerator(context);
 
 	// Register the central command that executes the chosen refactoring.
 	// When a user clicks a refactor in the UI, this command is triggered with the refactor's ID.

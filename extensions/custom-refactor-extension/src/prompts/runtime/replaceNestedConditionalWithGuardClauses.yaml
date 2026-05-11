@@ -1,0 +1,17 @@
+refactorId: replaceNestedConditionalWithGuardClauses
+
+refactorName: Replace Nested Conditional with Guard Clauses
+
+description: >
+  Simplify deeply nested conditional logic by converting edge cases
+  into early returns (guard clauses).
+
+rules:
+  - Replace nested if/else structures with guard clauses
+  - Prefer early returns over deep nesting
+  - Preserve original behavior exactly
+  - Improve readability and reduce indentation depth
+  - Modify only the selected code
+  - Keep formatting and coding style consistent
+  - Do not introduce unnecessary helper functions
+  - Return only the updated full file

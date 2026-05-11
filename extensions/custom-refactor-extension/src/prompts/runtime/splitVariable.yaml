@@ -1,0 +1,13 @@
+refactorId: splitVariable
+
+refactorName: Split Variable
+
+description: >
+  Split variables that are reused for multiple responsibilities.
+
+rules:
+  - Preserve original behavior
+  - Use meaningful variable names
+  - Modify only the selected code
+  - Keep formatting consistent
+  - Do not add explanations
