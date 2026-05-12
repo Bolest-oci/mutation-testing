@@ -91,10 +91,10 @@ Generate report:
 
 ```bash
 cr-html --hide-skipped <database_path> > report.html
+```
 
 Implementation note:
 Do NOT re-run mutation execution just to answer “survived mutants”; rely on the existing database from the previous run.
-```
 
 Then reply only with:
 
