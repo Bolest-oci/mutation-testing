@@ -194,7 +194,7 @@ export function loadRuntimeRefactors(): RuntimeRefactorConfig[] {
         throw new Error("Extension path not initialized. Ensure 'extensionPath' is set on 'global' during activation.");
     }
 
-    const promptsPath = path.join(extensionPath, "src", "prompts", "runtime");
+    const promptsPath = path.join(extensionPath, "out", "prompts", "runtime");
 
     if (!fs.existsSync(promptsPath)) {
         return [];
