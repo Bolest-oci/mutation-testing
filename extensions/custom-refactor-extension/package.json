@@ -1,7 +1,8 @@
 {
   "name": "custom-refactor-extension",
-  "displayName": "custom-refactor-extension",
-  "description": "Provides a catalog of refactorings as code actions across multiple languages.",
+  "displayName": "Custom Refactor Extension",
+  "publisher": "Richard Macko",
+  "description": "VS Code extension providing custom AST, LSP and LLM-based refactorings across multiple languages.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.110.0"
