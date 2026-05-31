@@ -1,4 +1,4 @@
-import { registerRefactor, RefactorContext } from "../../refactorEngine";
+import { registerRefactor, RefactorContext, BaseRefactor } from "../../refactorEngine";
 import { extractConstantLsp } from "./lsp";
 import { extractConstantNumberShell } from "./shellNumber";
 import { extractConstantStringShell } from "./shellString";
@@ -6,32 +6,44 @@ import { treesitter_getNodeAt, treesitter_findParent } from "../../analyzers/she
 
 const REFACTOR_ID = "extractConstant";
 
-async function extractConstant(context: RefactorContext) {
+export class ExtractConstantRefactor extends BaseRefactor {
+  readonly id = REFACTOR_ID;
 
-  const lang = context.language;
+  async isApplicable(context: RefactorContext): Promise<boolean> {
+    const lang = context.language;
 
-  if (lang === "shellscript") {
+    if (lang === "shellscript") {
+      const { document, selection, code } = context;
+      const offset = document.offsetAt(selection.start);
+      const info = treesitter_getNodeAt(code, offset);
 
-    const { document, selection, code } = context;
-
-    const offset = document.offsetAt(selection.start);
-
-    const info = treesitter_getNodeAt(code, offset);
-
-    if (treesitter_findParent(info.node, "number")) {
-      return extractConstantNumberShell(context);
+      return !!(treesitter_findParent(info.node, "number") || treesitter_findParent(info.node, "string"));
     }
 
-    if (treesitter_findParent(info.node, "string")) {
-      return extractConstantStringShell(context);
-    }
-
-    return;
+    return lang === "javascript" || lang === "typescript";
   }
 
-  if (lang === "javascript" || lang === "typescript") {
-    return extractConstantLsp(context);
+  async run(context: RefactorContext): Promise<void> {
+    const lang = context.language;
+
+    if (lang === "shellscript") {
+      const { document, selection, code } = context;
+      const offset = document.offsetAt(selection.start);
+      const info = treesitter_getNodeAt(code, offset);
+
+      if (treesitter_findParent(info.node, "number")) {
+        return extractConstantNumberShell(context);
+      }
+
+      if (treesitter_findParent(info.node, "string")) {
+        return extractConstantStringShell(context);
+      }
+    }
+
+    if (lang === "javascript" || lang === "typescript") {
+      return extractConstantLsp(context);
+    }
   }
 }
 
-registerRefactor(REFACTOR_ID, extractConstant);
+registerRefactor(REFACTOR_ID, new ExtractConstantRefactor());
