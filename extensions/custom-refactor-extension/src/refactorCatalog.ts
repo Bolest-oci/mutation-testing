@@ -115,13 +115,13 @@ export const REFACTOR_LIST: RefactorDefinition[] = [
     tags: ["inheritance", "extract"]
   },
 
- {
-  id: "extractVariable",
-  name: "Extract Variable",
-  supportedLanguages: ["javascript", "typescript", "python"],
-  kind: vscode.CodeActionKind.RefactorExtract,
-  tags: ["extract"]
-},
+  {
+    id: "extractVariable",
+    name: "Extract Variable",
+    supportedLanguages: ["javascript", "typescript", "python"],
+    kind: vscode.CodeActionKind.RefactorExtract,
+    tags: ["extract"]
+  },
 
   {
     id: "extractVariableLsp", name: "Extract Variable (LSP)",
@@ -137,26 +137,19 @@ export const REFACTOR_LIST: RefactorDefinition[] = [
     tags: ["extract"]
   },
   {
-  id: "llmRefactor",
-  name: "LLM Refactor (Consolidate Condition)",
-  supportedLanguages: ["javascript", "typescript", "python", "shellscript"],
-  kind: vscode.CodeActionKind.Refactor,
-  tags: ["llm"]
-},
-{
-  id: "consolidateConditional",
-  name: "Consolidate Conditional",
-  supportedLanguages: ["shellscript"],
-  kind: vscode.CodeActionKind.RefactorRewrite,
-  tags: ["refactor"]
-},
-{
-  id: "extractConstantStringShell",
-  name: "Extract Constant (String) [LLM]",
-  supportedLanguages: ["shellscript"],
-  kind: vscode.CodeActionKind.RefactorExtract.append("constant"),
-  tags: ["extract", "constant", "llm"]
-},
+    id: "consolidateConditional",
+    name: "Consolidate Conditional",
+    supportedLanguages: ["shellscript"],
+    kind: vscode.CodeActionKind.RefactorRewrite,
+    tags: ["refactor"]
+  },
+  {
+    id: "extractConstantStringShell",
+    name: "Extract Constant (String) [LLM]",
+    supportedLanguages: ["shellscript"],
+    kind: vscode.CodeActionKind.RefactorExtract.append("constant"),
+    tags: ["extract", "constant", "llm"]
+  },
 
   {
     id: "inlineVariable", name: "Inline Variable",
@@ -298,18 +291,26 @@ export const REFACTOR_LIST: RefactorDefinition[] = [
   },
 
   {
-  id: "extractConstant",
-  name: "Extract Constant",
-  supportedLanguages: ["javascript", "typescript", "shellscript"],
-  kind: vscode.CodeActionKind.RefactorExtract.append("constant"),
-  tags: ["extract","constant"]
-},
+    id: "extractConstant",
+    name: "Extract Constant",
+    supportedLanguages: ["javascript", "typescript", "shellscript"],
+    kind: vscode.CodeActionKind.RefactorExtract.append("constant"),
+    tags: ["extract", "constant"]
+  },
 
   {
-    id: "replaceNestedConditionalWithGuardClauses", name: "Replace Nested Conditional with Guard Clauses",
-    supportedLanguages: ["javascript", "typescript", "python", "php"],
+    id: "replaceNestedConditionalWithGuardClauses",
+    name: "Replace Nested Conditional With Guard Clauses",
+    supportedLanguages: ["shellscript"],
     kind: vscode.CodeActionKind.RefactorRewrite,
-    tags: ["conditional"]
+    tags: ["conditionals", "llm", "runtime"]
+  },
+  {
+    id: "removeFlagArgument",
+    name: "Remove Flag Argument",
+    supportedLanguages: ["shellscript"],
+    kind: vscode.CodeActionKind.RefactorRewrite,
+    tags: ["functions", "llm", "runtime"]
   },
 
   {
@@ -341,10 +342,11 @@ export const REFACTOR_LIST: RefactorDefinition[] = [
   },
 
   {
-    id: "splitVariable", name: "Split Variable",
-    supportedLanguages: ["javascript", "typescript", "python", "php"],
+    id: "splitVariable",
+    name: "Split Variable",
+    supportedLanguages: ["shellscript"],
     kind: vscode.CodeActionKind.RefactorRewrite,
-    tags: ["variables"]
+    tags: ["variables", "llm", "runtime"]
   },
 
   {
@@ -354,12 +356,12 @@ export const REFACTOR_LIST: RefactorDefinition[] = [
     tags: ["algorithm"]
   },
   {
-  id: "convertIfToCase",
-  name: "Convert if to case",
-  supportedLanguages: ["shellscript"],
-  kind: vscode.CodeActionKind.RefactorRewrite,
-  tags: ["control-flow"]
-}
+    id: "convertIfToCase",
+    name: "Convert if to case",
+    supportedLanguages: ["shellscript"],
+    kind: vscode.CodeActionKind.RefactorRewrite,
+    tags: ["control-flow"]
+  }
 
 ];
 
@@ -373,13 +375,18 @@ export const REFACTOR_MAP = Object.fromEntries(
 export const CODE_SMELL_MAPPING: Record<string, string[]> = {
   "duplicatedcode": ["extractFunction", "consolidateConditional"],
 
-  "longmethod": ["extractFunction"],
+  "longmethod": ["extractFunction", "replaceNestedConditionalWithGuardClauses"],
 
   "primitiveobsession": [
     "extractConstant",
     "extractConstantStringShell",
-    "extractConstantStringShellLlm"
+    "extractConstantStringShellLlm",
+    "splitVariable",
   ],
 
-  "switchstatements": ["convertIfToCase"]
+  "switchstatements": ["convertIfToCase", "replaceNestedConditionalWithGuardClauses"],
+
+  "longparameterlist": [
+    "removeFlagArgument"
+  ],
 };

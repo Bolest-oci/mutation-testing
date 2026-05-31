@@ -37,7 +37,7 @@
  */
 import * as vscode from 'vscode';
 import { REFACTOR_LIST, CODE_SMELL_MAPPING } from './refactorCatalog';
-import { runRefactor } from './refactorEngine';
+import { registerRefactor, runRefactor, getRefactor, BaseRefactor } from './refactorEngine';
 // Import refactor implementations here to trigger their registration
 import "./refactors/extractVariable";
 import "./refactors/extractVariable/lsp";
@@ -45,7 +45,6 @@ import "./refactors/inlineVariable";
 import "./refactors/renameSymbol";
 import "./refactors/extractFunction/index";
 import "./refactors/extractConstant";
-import "./refactors/llmRefactor";
 import "./refactors/consolidateConditional";
 // Generated (LLM-based) refactors
 import "./refactors/extractConstant/index.generated";
@@ -54,6 +53,9 @@ import "./refactors/convertIfToCase/index.generated";
 import { registerAIRefactorRunner } from "./llmRefactorRunner";
 import { registerLLMRefactorGenerator } from "./llmRefactorGenerator";
 
+import {
+    registerRuntimeYamlRefactors
+} from "./runtimeYamlRefactors";
 
 
 // This method is called when your extension is activated.
@@ -89,6 +91,10 @@ export function activate(context: vscode.ExtensionContext) {
 	// These usually involve complex logic or interaction with external AI services.
     registerAIRefactorRunner(context);
     registerLLMRefactorGenerator(context);
+    registerRuntimeYamlRefactors();
+    
+    // Register runtime YAML LLM refactors
+    
 
 	// Register the central command that executes the chosen refactoring.
 	// When a user clicks a refactor in the UI, this command is triggered with the refactor's ID.
@@ -144,11 +150,11 @@ class CustomRefactorProvider implements vscode.CodeActionProvider {
 	 * 4. Filter the global refactor catalog based on language and detected smells.
 	 * 5. Convert matching refactors into VS Code CodeAction objects.
 	 */
-	provideCodeActions(
+	async provideCodeActions(
     document: vscode.TextDocument,
     range: vscode.Range | vscode.Selection,
     context: vscode.CodeActionContext
-): vscode.CodeAction[] {
+): Promise<vscode.CodeAction[]> {
 
     // 1. Filter: Only show our refactors if specifically requested via 'Refactor...' menu 
     // or if no specific kind is requested (e.g., clicking the lightbulb menu).
@@ -207,24 +213,41 @@ class CustomRefactorProvider implements vscode.CodeActionProvider {
         }
     }
 
-    // --- MAPPING TO VS CODE UI ---
-    // Transform our internal refactor definitions into objects that VS Code can display.
-    return availableRefactors.map(refactor => {
+    // --- FINE-GRAINED APPLICABILITY CHECK (New Pattern) ---
+    const refactorContext = {
+        document,
+        selection: range instanceof vscode.Selection ? range : new vscode.Selection(range.start, range.end),
+        language: document.languageId,
+        code: document.getText()
+    };
 
-        // Create a display label (e.g., "MBT (typescript): Extract Variable")
+    const finalActions: vscode.CodeAction[] = [];
+
+    for (const refactorDef of availableRefactors) {
+        const impl = getRefactor(refactorDef.id);
+        
+        // If it's a class-based refactor, check if it's applicable
+        if (impl instanceof BaseRefactor) {
+            if (!(await impl.isApplicable(refactorContext))) {
+                continue;
+            }
+        }
+
+        // --- MAPPING TO VS CODE UI ---
         const action = new vscode.CodeAction(
-            `MBT (${language}${detectedCodeSmell ? ': ' + detectedCodeSmell : ''}): ${refactor.name}`,
-            refactor.kind
+            `MBT (${language}${detectedCodeSmell ? ': ' + detectedCodeSmell : ''}): ${refactorDef.name}`,
+            refactorDef.kind
         );
 
-        // Link the menu item to our execution command and pass the unique refactor ID.
         action.command = {
             command: "custom-refactor-extension.executeRefactor",
-            title: refactor.name,
-            arguments: [refactor.id]
+            title: refactorDef.name,
+            arguments: [refactorDef.id]
         };
 
-        return action;
-    });
+        finalActions.push(action);
+    }
+
+    return finalActions;
 }
 }
