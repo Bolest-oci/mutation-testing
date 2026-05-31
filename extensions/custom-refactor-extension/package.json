@@ -1,7 +1,7 @@
 {
   "name": "custom-refactor-extension",
   "displayName": "Custom Refactor Extension",
-  "publisher": "Richard Macko",
+  "publisher": "richard-macko",
   "description": "VS Code extension providing custom AST, LSP and LLM-based refactorings across multiple languages.",
   "version": "0.0.1",
   "engines": {
