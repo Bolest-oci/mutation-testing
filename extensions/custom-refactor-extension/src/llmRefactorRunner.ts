@@ -120,11 +120,12 @@ export async function executeRuntimeRefactor(config: RuntimeRefactorConfig): Pro
     const selectedCode = document.getText(editor.selection);
     const language = document.languageId;
 
-    // We prefer Copilot GPT-4.1 for high-quality refactoring
-    const [model] = await vscode.lm.selectChatModels({
-        vendor: "copilot",
-        family: "gpt-4.1" // Use generic gpt-4 family for better compatibility
-    });
+    const models = await vscode.lm.selectChatModels();
+
+const model =
+    models.find(m => m.id === "gpt-5-mini")
+    ?? models.find(m => m.vendor === "copilot")
+    ?? models[0];
 
     if (!model) {
         vscode.window.showErrorMessage("No compatible AI model available. Please ensure GitHub Copilot is enabled.");
